@@ -1,3 +1,6 @@
+## TODO
+This doesn't quite work, need to add submodules or something
+
 ##Who doesn't love some dotfiles
 
 Since I have spent **far** too many hours playing with this kind of stuff and using dropbox, I
