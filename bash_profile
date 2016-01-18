@@ -7,6 +7,9 @@ export ARCHFLAGS="-arch x86_64"
 #Ensure user-installed binaries take precendence
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 export PATH=/usr/texbin:$PATH
+#For Go
+export PATH=$PATH:/usr/local/opt/go/libexec/bin
+
 #Load .bashrc if it exists
 if [ -f ~/.bashrc ]; then
     source ~/.bashrc

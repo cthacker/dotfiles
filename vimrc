@@ -26,10 +26,14 @@ Plugin 'Valloric/YouCompleteMe'
 Plugin 'tpope/vim-surround'
 Plugin 'jelera/vim-javascript-syntax'
 Plugin 'kien/ctrlp.vim'
+"Plugin 'manuel-colmenero/vim-simple-session' " session management :h simple-session
 
 "molokai
 "let g:molokai_original = 1
 "let g:rehash256 = 1
+
+" ctrlp settings
+let g:ctrlp_match_window = 'results:100' " overcome limit imposed by max heigh
 
 "NERDTree
 map <leader>nn :NERDTreeToggle<CR>
@@ -97,6 +101,13 @@ call vundle#end()
 " map space bar to the <Leader>
 map <Space> <Leader>
 
+" map ; to : make easy commands yo
+map ; :
+
+" F2 saves your session (tabs, buffers etc) F3 restores
+map <F2> :mksession! ~/.vim_session <cr> " Quick write session with F2
+map <F3> :source ~/.vim_session <cr>     " And load session with F3
+
 " CTRL-U in insert mode deletes a lot.  Use CTRL-G u to first break undo,
 " so that you can undo CTRL-U after inserting a line break.
 inoremap <C-U> <C-G>u<C-U>
@@ -117,9 +128,24 @@ filetype on
 filetype plugin on
 filetype plugin indent on
 
+" Configre tabs. Tabs convert to spaces
+set tabstop=2
+set shiftwidth=2
+set softtabstop=2
+set expandtab
+set autoindent
+
+" Python stuff
+au BufNewFile,BufRead *.py setlocal tabstop=4 shiftwidth=4 softtabstop=4
+
+" Javascript stuff
+au BufNewFile,BufRead *.ejs setlocal filetype=html
+
 " Only do this part when compiled with support for autocommands.
 if has("autocmd")
 
+  " remove trailing whitespace for these languages
+  autocmd FileType c,cpp,java,javascript,php,ruby,python autocmd BufWritePre <buffer> :%s/\s\+$//e
 
   " Put these in an autocmd group, so that we can delete them easily.
   augroup vimrcEx
@@ -193,14 +219,6 @@ set scrolloff=4
 
 " Allow the cursor to go to areas beyong the line
 set virtualedit=all
-
-" Tabstops are 4 spaces
-set tabstop=4
-set shiftwidth=4
-set softtabstop=4
-set expandtab
-set autoindent
-
 
 " Set up the gui cursor to look nice
 set guicursor=n-v-c:block-Cursor-blinkon0,ve:ver35-Cursor,o:hor50-Cursor,i-ci:ver25-Cursor,r-cr:hor20-Cursor,sm:block-Cursor-blinkwait175-blinkoff150-blinkon175
