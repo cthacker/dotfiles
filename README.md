@@ -16,6 +16,10 @@ Installation is a super easy process.
 1. clone repo  `git clone git@github.com:/cthacker/dotfiles.git`
 2. `cd dotfiles/`
 3. `./install.sh`
+4. `git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim`
+5. open vim and type `:PluginInstall`
+6. cd into youcompleteme folder and compile using
+  - ./install.py --clang-completer --tern-completer --gocode-completer
 
 ## Unistall
 
