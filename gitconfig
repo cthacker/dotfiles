@@ -11,3 +11,5 @@
 	required = true
 [core]
     editor = vim
+[merge]
+    conflictstyle = diff3

@@ -18,14 +18,20 @@ call vundle#begin()
 Plugin 'gmarik/Vundle.vim'
 
 " My plugins
+Plugin 'vimwiki/vimwiki'
 Plugin 'scrooloose/syntastic'
 Plugin 'scrooloose/nerdtree'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'bling/vim-airline'
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'tpope/vim-surround'
-Plugin 'jelera/vim-javascript-syntax'
+"Plugin 'jelera/vim-javascript-syntax'
+Plugin 'pangloss/vim-javascript'
+Plugin 'mxw/vim-jsx'
 Plugin 'kien/ctrlp.vim'
+Plugin 'derekwyatt/vim-scala'
+Plugin 'helino/vim-json'
+Plugin 'Raimondi/delimitMate'
 "Plugin 'manuel-colmenero/vim-simple-session' " session management :h simple-session
 
 "molokai
@@ -52,6 +58,7 @@ set statusline+=%*
 
 let g:syntastic_python_checkers = ['flake8']
 let g:syntastic_javascript_checkers = ['jshint']
+let g:syntastic_javascript_jsxhint_exec = 'jsx-jshint-wrapper'
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_wq = 0
@@ -139,7 +146,7 @@ set autoindent
 au BufNewFile,BufRead *.py setlocal tabstop=4 shiftwidth=4 softtabstop=4
 
 " Javascript stuff
-au BufNewFile,BufRead *.ejs setlocal filetype=html
+au BufNewFile,BufRead *.ejs,*.hbs setlocal filetype=html
 
 " Only do this part when compiled with support for autocommands.
 if has("autocmd")
@@ -187,11 +194,13 @@ vmap <Leader>y "+y
 vmap <Leader>d "+d
 vmap <Leader>p "+p
 vmap <Leader>P "+P
+vmap <Leader>x "+x
 
 nmap <Leader>p "+p
 nmap <Leader>P "+P
 nmap <Leader>y "+y
 nmap <Leader>d "+d
+nmap <Leader>x "+x
 
 " Enables enhanced command-line completion. Presumes you have compiled
 " with +wildmenu. See :help 'wildmenu'
