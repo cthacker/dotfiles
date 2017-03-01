@@ -19,7 +19,7 @@ Installation is a super easy process.
 4. `git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim`
 5. open vim and type `:PluginInstall`
 6. cd into youcompleteme folder and compile using
-  - ./install.py --clang-completer --tern-completer --gocode-completer
+  - ./install.py --all
 
 ## Unistall
 
