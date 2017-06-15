@@ -1,7 +1,7 @@
 ## TODO
-This doesn't quite work, need to add submodules or something
 
-##Who doesn't love some dotfiles
+
+## Who doesn't love some dotfiles
 
 Since I have spent **far** too many hours playing with this kind of stuff and using dropbox, I
 figured why not take it a step further and spend some more time putting this on github.
@@ -12,6 +12,9 @@ scripts.
 ## Installation
 
 Installation is a super easy process. 
+
+Recommend using Zsh instead of Bash
+https://github.com/sorin-ionescu/prezto
 
 1. clone repo  `git clone git@github.com:/cthacker/dotfiles.git`
 2. `cd dotfiles/`
