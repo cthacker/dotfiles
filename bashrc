@@ -68,7 +68,7 @@ alias lrt='ls -lrt'
 alias da='date "+%Y-%m-%d %A    %T %Z"'
 alias firefox='firefox 2>/dev/null &'
 alias chrome='chromium-browser 2>/dev/null &'
-alias vim='mvim'
+alias vim='gvim'
 
 
 # Add an "alert" alias for long running commands.  Use like so:
