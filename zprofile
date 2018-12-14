@@ -33,7 +33,7 @@ fi
 # Paths
 #
 fpath=(
-  ~/.zsh/copmletion
+  ~/.zsh/completion
   /usr/local/share/zsh/site-functions
   $fpath
 )
