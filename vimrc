@@ -10,6 +10,7 @@ set encoding=utf-8
 set visualbell t_vb=
 set noerrorbells
 set novisualbell
+set belloff=all
 
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
@@ -31,8 +32,10 @@ Plugin 'pangloss/vim-javascript'
 Plugin 'mxw/vim-jsx'
 Plugin 'kien/ctrlp.vim'
 Plugin 'derekwyatt/vim-scala'
-Plugin 'helino/vim-json'
 Plugin 'Raimondi/delimitMate'
+
+Plugin 'godlygeek/tabular'
+Plugin 'plasticboy/vim-markdown'
 "Plugin 'manuel-colmenero/vim-simple-session' " session management :h simple-session
 
 "molokai
@@ -93,6 +96,8 @@ function! YCMToggle()
     endif
 endfunction
 
+" vimwiki/vimwiki
+let g:vimwiki_list = [{'path': '~/vimwiki/', 'syntax': 'markdown', 'ext': '.md'}]
 
 call vundle#end()
 " Brief help
@@ -145,6 +150,10 @@ set autoindent
 " Python stuff
 au BufNewFile,BufRead *.py setlocal tabstop=4 shiftwidth=4 softtabstop=4
 
+" C++ stuff
+au BufNewFile,BufRead *.cpp setlocal tabstop=4 shiftwidth=4 softtabstop=4
+au BufNewFile,BufRead *.hpp setlocal tabstop=4 shiftwidth=4 softtabstop=4
+ 
 " Javascript stuff
 au BufNewFile,BufRead *.ejs,*.hbs setlocal filetype=html
 
@@ -152,7 +161,7 @@ au BufNewFile,BufRead *.ejs,*.hbs setlocal filetype=html
 if has("autocmd")
 
   " remove trailing whitespace for these languages
-  autocmd FileType c,cpp,java,javascript,php,ruby,python autocmd BufWritePre <buffer> :%s/\s\+$//e
+  autocmd FileType c,cpp,hpp,java,javascript,php,ruby,python autocmd BufWritePre <buffer> :%s/\s\+$//e
 
   " Put these in an autocmd group, so that we can delete them easily.
   augroup vimrcEx
@@ -237,7 +246,7 @@ set textwidth=100
 
 " Enable search highlighting
 set hlsearch
-" spacebar turns of highlight
+" leader / turns of highlight
 :nnoremap <silent> <Leader>/ :nohlsearch<Bar>:echo<CR> 
 " do not require case sensitivity in search
 set ignorecase

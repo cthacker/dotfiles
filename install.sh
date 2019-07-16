@@ -9,7 +9,7 @@ else
     mkdir -p ${HOME}/.dotfiles_backup
     
     # array of files we backup
-    declare -a files=(vim vimrc bashrc bash_profile gitconfig zshrc zprofile)
+    declare -a files=(vim vimrc bashrc bash_profile gitconfig zshrc zprofile zpreztorc)
     
     # loop through files that we backup and move to backup folder
     for i in ${files[@]}
