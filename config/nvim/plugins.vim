@@ -44,6 +44,8 @@ Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
 "Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
 "Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
                      
+" ctrl-j etc to move tmux panes or vim splits
+Plug 'christoomey/vim-tmux-navigator'
  
 " Fuzzy finder
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
