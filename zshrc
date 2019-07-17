@@ -11,12 +11,14 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 fi
 
 export PATH="/home/cameron/.pyenv/bin:$PATH"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
+if command -v pyenv 1>/dev/null 2>&1; then
+  eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)"
+fi 
 
 # Customize to your needs...
 alias gla='git log --pretty=oneline --abbrev-commit'
-alias vim='gvim'
+alias vim='nvim'
 ulimit -n 2048
 alias dockerclean='docker rmi $(docker images -f "dangling=true" -q); docker volume rm $(docker volume ls -qf dangling=true)'
 alias ls='ls --color=auto'
@@ -31,3 +33,5 @@ if [ -f '/home/cameron/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/home
 if [ -f '/home/cameron/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/cameron/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+ o
+
