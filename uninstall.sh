@@ -1,18 +1,19 @@
 #!/bin/bash
 
 # array of files we backup
-declare -a files=(.vim .vimrc .bashrc .bash_profile .gitconfig)
+declare -a files=(.config/nvm .vim .vimrc .bashrc .bash_profile .gitconfig .zshrc .zprofile
+.zpreztorc)
 
 if [ -d "$HOME/.dotfiles_backup/" ] 
 then
-    echo Restoring previously backed up dotfiles from ~/.dotfiles_backup
-    
+    echo "Restoring previously backed up dotfiles from ~/.dotfiles_backup"
+
     # remove symlinks to the dotfiles
-    echo Removing symlinks in your home directory 
+    echo "Removing symlinks in your home directory"
     
     for i in ${files[@]}
     do
-      rm ~/$i
+      rm -rf $HOME/$i
     done 
     
     # loop through files that we backup and move to home folder

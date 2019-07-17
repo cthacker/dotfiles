@@ -12,94 +12,13 @@ set noerrorbells
 set novisualbell
 set belloff=all
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-
-" required for vundle to mangage vundle
-Plugin 'gmarik/Vundle.vim'
-
-" My plugins
-Plugin 'vimwiki/vimwiki'
-Plugin 'scrooloose/syntastic'
-Plugin 'scrooloose/nerdtree'
-Plugin 'scrooloose/nerdcommenter'
-Plugin 'bling/vim-airline'
-Plugin 'Valloric/YouCompleteMe'
-Plugin 'tpope/vim-surround'
-"Plugin 'jelera/vim-javascript-syntax'
-Plugin 'pangloss/vim-javascript'
-Plugin 'mxw/vim-jsx'
-Plugin 'kien/ctrlp.vim'
-Plugin 'derekwyatt/vim-scala'
-Plugin 'Raimondi/delimitMate'
-
-Plugin 'godlygeek/tabular'
-Plugin 'plasticboy/vim-markdown'
-"Plugin 'manuel-colmenero/vim-simple-session' " session management :h simple-session
-
-"molokai
-"let g:molokai_original = 1
-"let g:rehash256 = 1
-
-" ctrlp settings
-let g:ctrlp_match_window = 'results:100' " overcome limit imposed by max heigh
-
 "NERDTree
 map <leader>nn :NERDTreeToggle<CR>
 
 
-"syntastic
-nnoremap <Leader>ss :SyntasticToggleMode<CR>
-nnoremap <silent> <leader>ln :lnext<cr>
-nnoremap <silent> <leader>lp :lprevious<cr>
-nnoremap <silent> <leader>lc :lclose<cr>
-nnoremap <silent> <leader>lo :lopen<cr>
-
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-
-let g:syntastic_python_checkers = ['flake8']
-let g:syntastic_javascript_checkers = ['eslint']
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_wq = 0
-
-" For airline plugin
-if !exists('g:airline_symbols')
-  let g:airline_symbols = {}
-endif
-
-" unicode symbols
-let g:airline_left_sep = ''
-let g:airline_right_sep = ''
-let g:airline_symbols.linenr = '¶'
-let g:airline_symbols.branch = '⎇'                         
-let g:airline_symbols.paste = 'ρ'
-let g:airline_symbols.whitespace = 'Ξ' 
-let g:airline#extensions#whitespace#enabled=0
-let g:airline#extensions#tabline#enabled=1
-let g:airline#extensions#tabline#fnamemod=':t'
-set laststatus=2 
-            
-" For YouCompleteMe
-let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'
-"turn on and off YouCompleteMe 
-nnoremap <leader>ycm :call YCMToggle()<cr>
-           
-function! YCMToggle()
-    if g:ycm_auto_trigger
-        let g:ycm_auto_trigger=0
-    else                       
-        let g:ycm_auto_trigger=1
-    endif
-endfunction
-
 " vimwiki/vimwiki
 let g:vimwiki_list = [{'path': '~/vimwiki/', 'syntax': 'markdown', 'ext': '.md'}]
 
-call vundle#end()
 " Brief help
 " :PluginList       - lists configured plugins
 " :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
@@ -269,7 +188,10 @@ set pastetoggle=<F2>
 
 " Lets Vim know that it can use 256 colors
 set t_Co=256
-"colorscheme wombat256mod
+set termguicolors          
+set background=dark
+"colorscheme hybrid
+"let ayucolor="mirage" " for mirage version of theme
+"let ayucolor="dark"   " for dark version of theme
+"colorscheme ayu
 colorscheme molokai
-" Set the colorscheme in python -- as darkspectrum is good for c++
-" autocmd FileType python colorscheme wombat
