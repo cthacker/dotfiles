@@ -22,7 +22,7 @@ call plug#begin('~/.config/nvim/plugged')
 
 " === Editing Plugins === "
 " Trailing whitespace highlighting & automatic fixing
-"Plug 'ntpeters/vim-better-whitespace'
+Plug 'ntpeters/vim-better-whitespace'
 
 " Wiki
 Plug 'vimwiki/vimwiki'     
