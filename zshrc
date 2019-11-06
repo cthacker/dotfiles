@@ -13,10 +13,11 @@ fi
 # Customize to your needs...
 alias gla='git log --pretty=oneline --abbrev-commit'
 alias vim='nvim'
+alias cat='bat'
 ulimit -n 2048
 alias dockerclean='docker rmi $(docker images -f "dangling=true" -q); docker volume rm $(docker volume ls -qf dangling=true)'
-#alias ls='ls --color=auto'
-alias ls='ls -G'
+alias ls='ls --color=auto'
+#alias ls='ls -G'
 
 # make it so cd ..<TAB> completes to cd ../ like it should
 zstyle ':completion:*' special-dirs true

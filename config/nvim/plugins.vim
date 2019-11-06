@@ -23,9 +23,11 @@ call plug#begin('~/.config/nvim/plugged')
 " === Editing Plugins === "
 " Trailing whitespace highlighting & automatic fixing
 Plug 'ntpeters/vim-better-whitespace'
+let g:better_whitespace_enabled=1
+let g:strip_whitespace_on_save=1
 
 " Wiki
-Plug 'vimwiki/vimwiki'     
+Plug 'vimwiki/vimwiki'
 
 " needed for vimwiki
 Plug 'godlygeek/tabular'
@@ -35,7 +37,7 @@ Plug 'sheerun/vim-polyglot'
 
 " auto-close plugin
 Plug 'rstacruz/vim-closer'
-  
+
 " quick comment/uncomment lines
 Plug 'scrooloose/nerdcommenter'
 
@@ -43,13 +45,16 @@ Plug 'scrooloose/nerdcommenter'
 Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
 "Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
 "Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
-                     
+
 " ctrl-j etc to move tmux panes or vim splits
 Plug 'christoomey/vim-tmux-navigator'
- 
+
 " Fuzzy finder
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
+
+" Markdown previewer
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
 
 " Print function signatures in echo area
 "Plug 'Shougo/echodoc.vim'

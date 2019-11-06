@@ -72,7 +72,7 @@ au BufNewFile,BufRead *.py setlocal tabstop=4 shiftwidth=4 softtabstop=4
 " C++ stuff
 au BufNewFile,BufRead *.cpp setlocal tabstop=4 shiftwidth=4 softtabstop=4
 au BufNewFile,BufRead *.hpp setlocal tabstop=4 shiftwidth=4 softtabstop=4
- 
+
 " Javascript stuff
 au BufNewFile,BufRead *.ejs,*.hbs setlocal filetype=html
 
@@ -80,7 +80,7 @@ au BufNewFile,BufRead *.ejs,*.hbs setlocal filetype=html
 if has("autocmd")
 
   " remove trailing whitespace for these languages
-  autocmd FileType c,cpp,hpp,java,javascript,php,ruby,python autocmd BufWritePre <buffer> :%s/\s\+$//e
+  "autocmd FileType c,cpp,hpp,java,javascript,php,ruby,python autocmd BufWritePre <buffer> :%s/\s\+$//e
 
   " Put these in an autocmd group, so that we can delete them easily.
   augroup vimrcEx
@@ -105,7 +105,7 @@ endif " has("autocmd")
 if !exists(":DiffOrig")
   command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
 		  \ | wincmd p | diffthis
-endif 
+endif
 
 " Tells you what mode you are in
 set showmode
@@ -166,11 +166,11 @@ set textwidth=100
 " Enable search highlighting
 set hlsearch
 " leader / turns of highlight
-:nnoremap <silent> <Leader>/ :nohlsearch<Bar>:echo<CR> 
+:nnoremap <silent> <Leader>/ :nohlsearch<Bar>:echo<CR>
 " do not require case sensitivity in search
 set ignorecase
 " Incrementally match the search
-set incsearch                  
+set incsearch
 
 " lets ii get you out of insert mode
 imap ii <Esc>
@@ -188,7 +188,7 @@ set pastetoggle=<F2>
 
 " Lets Vim know that it can use 256 colors
 set t_Co=256
-set termguicolors          
+set termguicolors
 set background=dark
 "colorscheme hybrid
 "let ayucolor="mirage" " for mirage version of theme
