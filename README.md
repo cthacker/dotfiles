@@ -14,15 +14,12 @@ scripts.
 Installation is a super easy process. 
 
 Recommend using Zsh instead of Bash
-https://github.com/sorin-ionescu/prezto
 
-1. clone repo  `git clone git@github.com:/cthacker/dotfiles.git`
-2. `cd dotfiles/`
-3. `./install.sh`
-4. `git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim`
-5. open vim and type `:PluginInstall`
-6. cd into youcompleteme folder and compile using
-  - ./install.py --all
+1. https://github.com/sorin-ionescu/prezto
+2. clone repo  `git clone git@github.com:/cthacker/dotfiles.git`
+3. `cd dotfiles/`
+4. run the install for your system eg, `./install_linux.sh`
+5. open vim and type `:PlugInstall`
 
 ## Unistall
 
