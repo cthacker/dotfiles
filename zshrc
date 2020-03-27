@@ -29,3 +29,5 @@ if [ -f '/home/cameron/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/home
 if [ -f '/home/cameron/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/cameron/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"

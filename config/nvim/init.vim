@@ -47,7 +47,7 @@ endif
 let g:coc_force_debug=1
 
 
-let g:coc_global_extensions = ['coc-emoji', 'coc-eslint', 'coc-prettier', 'coc-tsserver', 'coc-json', 'coc-python', 'coc-yaml', 'coc-ccls', 'coc-pairs']
+let g:coc_global_extensions = ['coc-emoji', 'coc-eslint', 'coc-prettier', 'coc-tsserver', 'coc-json', 'coc-python', 'coc-yaml', 'coc-pairs']
 
 " Better display for messages
 set cmdheight=2
