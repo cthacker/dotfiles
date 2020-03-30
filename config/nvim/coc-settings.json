@@ -1,10 +1,22 @@
 {
+  "diagnostic.errorSign": "✖",
+  "diagnostic.warningSign": "⚠",
+  "diagnostic.infoSign": "ℹ",
+  "diagnostic.hintSign": "➤",
+  "suggest.noselect": false,
+  "suggest.echodocSupport": true,
   "suggest.maxCompleteItemCount": 20,
+  "codeLens.enable": true,
+  "signature.enable": true,
+  "suggest.preferCompleteThanJumpPlaceholder": true,
+  "typescript.preferences.quoteStyle": "single",
+  "typescript.preferences.importModuleSpecifier": "auto",
+  "tsserver.implicitProjectConfig.experimentalDecorators": true,
+  "python.jediEnabled": false,
+  "python.linting.mypyEnabled": true,
   "eslint.filetypes": ["javascript", "typescript", "typescriptreact", "javascriptreact"],
-  "diagnostic.errorSign": "•",
-  "diagnostic.warningSign": "•",
-  "diagnostic.infoSign": "•",
-  "diagnostic.messageTarget": "echo",
-  "languageserver": {
-  }
 }
+
+
+
+

@@ -105,5 +105,5 @@ au CursorHold * sil call CocActionAsync('highlight')
 au CursorHoldI * sil call CocActionAsync('showSignatureHelp')
 
 " FZF settings
-nnoremap <c-p> :Files<CR>
+nnoremap <c-p> :Files ~/<CR>
 "let g:fzf_nvim_statusline = 0 " disable statusline overwriting
