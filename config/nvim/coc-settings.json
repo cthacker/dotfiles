@@ -13,7 +13,7 @@
   "typescript.preferences.importModuleSpecifier": "auto",
   "tsserver.implicitProjectConfig.experimentalDecorators": true,
   "python.jediEnabled": false,
-  "python.linting.mypyEnabled": true,
+  "python.linting.mypyEnabled": false,
   "eslint.filetypes": ["javascript", "typescript", "typescriptreact", "javascriptreact"],
 }
 
