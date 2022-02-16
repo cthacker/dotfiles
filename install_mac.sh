@@ -4,6 +4,7 @@
 brew install neovim
 brew install ripgrep
 brew install tmux
+brew install node
 brew tap caskroom/fonts
 brew cask install font-hack-nerd-font font-firacode-nerd-font font-droidsansmono-nerd-font
 
