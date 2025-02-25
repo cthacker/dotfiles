@@ -1,0 +1,85 @@
+# Pure-inspired Starship Configuration
+# Minimalist theme inspired by the popular Pure prompt
+
+add_newline = true
+
+# Similar to the Pure prompt format but with better visibility
+format = """
+$directory\
+$git_branch\
+$git_status\
+$cmd_duration\
+$line_break\
+$character"""
+
+# Pure style character that changes to red when last command failed
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+vimcmd_symbol = "[❮](bold green)"
+
+# Directory with improved style
+[directory]
+style = "bold cyan"
+truncation_length = 3
+truncate_to_repo = true
+
+# Git styling with improved visibility
+[git_branch]
+format = "[$symbol$branch]($style) "
+symbol = " "
+style = "bold purple"
+
+# Enhanced git status with counts
+[git_status]
+format = '([$all_status$ahead_behind]($style) )'
+style = "bold yellow"
+ahead = "⇡${count} "
+behind = "⇣${count} "
+diverged = "⇕ "
+untracked = "?${count} "
+stashed = "*${count} "
+modified = "!${count} "
+staged = "+${count} "
+renamed = "»${count} "
+deleted = "✘${count} "
+
+# Command duration with improved visibility
+[cmd_duration]
+min_time = 1000
+format = "[$duration]($style) "
+style = "bold yellow"
+
+# Disable most other modules for Pure-like simplicity
+[username]
+disabled = true
+
+[hostname]
+disabled = true
+
+[aws]
+disabled = true
+
+[docker_context]
+disabled = true
+
+[package]
+disabled = true
+
+[nodejs]
+disabled = true
+
+[python]
+disabled = true
+
+[ruby]
+disabled = true
+
+[rust]
+disabled = true
+
+[jobs]
+disabled = true
+
+[time]
+disabled = true 

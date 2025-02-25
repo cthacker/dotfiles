@@ -1,0 +1,92 @@
+# Clean and Minimal Starship Configuration
+# A clean, minimal prompt with focused Git information and no user/host display
+
+add_newline = true
+
+# Clean format focusing on location and git status
+format = """
+$directory\
+$git_branch\
+$git_status\
+$cmd_duration\
+$line_break\
+$character"""
+
+# Simple character prompt
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+vimcmd_symbol = "[❮](bold blue)"
+
+# Directory display
+[directory]
+truncation_length = 3
+style = "bold blue"
+read_only = " 🔒"
+truncate_to_repo = true
+format = "[$path]($style)[$read_only]($read_only_style) "
+
+# Git branch with icon
+[git_branch]
+symbol = " "
+format = "[$symbol$branch]($style) "
+style = "bold purple"
+
+# Git status - detailed with counts
+[git_status]
+format = '([$all_status$ahead_behind]($style) )'
+style = "bold yellow"
+conflicted = "󰕚 "
+ahead = "⇡${count} "
+behind = "⇣${count} "
+diverged = "↕ "
+untracked = "?${count} "
+stashed = "󰏗 "
+modified = "!${count} "
+staged = "+${count} "
+renamed = "»${count} "
+deleted = "✘${count} "
+
+# Command duration
+[cmd_duration]
+min_time = 500
+format = " took [$duration](yellow) "
+
+# Disable username and hostname
+[username]
+disabled = true
+
+[hostname]
+disabled = true
+
+# Keep only the most useful language modules
+[nodejs]
+format = '[${symbol}($version )]($style)'
+symbol = " "
+style = "bold green"
+disabled = false
+
+[python]
+format = '[${symbol}($version )]($style)'
+symbol = " "
+style = "bold yellow"
+disabled = false
+
+# Turn off less commonly used modules to keep things clean
+[aws]
+disabled = true
+
+[docker_context]
+disabled = true
+
+[package]
+disabled = true
+
+[ruby]
+disabled = true
+
+[terraform]
+disabled = true
+
+[time]
+disabled = true 

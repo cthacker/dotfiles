@@ -1,0 +1,42 @@
+# Minimal Starship Configuration
+# Super simple, focused on just the essentials
+
+add_newline = false
+
+# Minimal format showing only what matters most
+format = """
+$directory\
+$git_branch\
+$git_status\
+$character"""
+
+# Super simple character
+[character]
+success_symbol = "[➜](bold green)"
+error_symbol = "[✗](bold red)"
+
+# Directory
+[directory]
+truncation_length = 3
+style = "blue bold"
+truncate_to_repo = true
+
+# Minimal git display
+[git_branch]
+format = "[$symbol$branch]($style) "
+symbol = "󰘬 "
+style = "bold purple"
+
+[git_status]
+format = '([\[$all_status$ahead_behind\]]($style) )'
+style = "bold yellow"
+ahead = ""
+behind = ""
+modified = ""
+staged = ""
+stashed = ""
+deleted = ""
+renamed = ""
+typechanged = ""
+untracked = ""
+diverged = "" 

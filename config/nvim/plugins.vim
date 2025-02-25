@@ -42,11 +42,27 @@ Plug 'rstacruz/vim-closer'
 " quick comment/uncomment lines
 Plug 'scrooloose/nerdcommenter'
 
-" Intellisense Engine
-Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
-"Plug 'neoclide/coc.nvim', {'branch': 'release'}
-"Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
-"Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
+" === LSP (Language Server Protocol) Support === "
+" LSP Configuration
+Plug 'neovim/nvim-lspconfig'
+" Autocompletion
+Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-cmdline'
+" Snippets
+Plug 'L3MON4D3/LuaSnip'
+Plug 'saadparwaiz1/cmp_luasnip'
+Plug 'rafamadriz/friendly-snippets'
+" LSP Server installer
+Plug 'williamboman/mason.nvim'
+Plug 'williamboman/mason-lspconfig.nvim'
+" JSON Schema support
+Plug 'b0o/schemastore.nvim'
+" Formatting & linting
+Plug 'jose-elias-alvarez/null-ls.nvim'
+Plug 'nvim-lua/plenary.nvim' " required by null-ls
 
 " ctrl-j etc to move tmux panes or vim splits
 Plug 'christoomey/vim-tmux-navigator'
@@ -55,20 +71,12 @@ Plug 'christoomey/vim-tmux-navigator'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 
+" Modern alternative to fzf
+Plug 'nvim-telescope/telescope.nvim', { 'branch': '0.1.x' }
+Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' }
+
 " Markdown previewer
-Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
-
-" Print function signatures in echo area
-"Plug 'Shougo/echodoc.vim'
-
-" === Javascript Plugins === "
-" Typescript syntax highlighting
-"Plug 'HerringtonDarkholme/yats.vim'
-
-" ReactJS JSX syntax highlighting
-"Plug 'mxw/vim-jsx'
-
-" === Syntax Highlighting === "
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install' }
 
 " === UI === "
 " File explorer
@@ -78,14 +86,19 @@ Plug 'scrooloose/nerdtree'
 Plug 'mhartington/oceanic-next'
 Plug 'w0ng/vim-hybrid'
 Plug 'ayu-theme/ayu-vim'
+Plug 'folke/tokyonight.nvim'
 
 " Customized vim status line
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
+" Git integration
+Plug 'airblade/vim-gitgutter'  " Show git diff in the gutter
+
 " Icons
 Plug 'ryanoasis/vim-devicons'
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+Plug 'nvim-tree/nvim-web-devicons'
 
 " Initialize plugin system
 call plug#end()

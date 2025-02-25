@@ -1,0 +1,112 @@
+# Powerline-inspired Starship configuration with rich segments
+# A modern, high-contrast powerline theme with status counts
+
+format = """
+[](bg:#1a1b26 fg:#7aa2f7)\
+$os\
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_status\
+$nodejs\
+$python\
+$rust\
+$golang\
+$cmd_duration\
+$line_break\
+$character"""
+
+# New line at the start of the prompt
+add_newline = true
+
+# Username and hostname with improved contrast
+[username]
+show_always = true
+style_user = "bg:#1a1b26 fg:#7dcfff"
+style_root = "bg:#1a1b26 fg:#f7768e"
+format = '[$user ]($style)'
+disabled = false
+
+[hostname]
+ssh_only = false
+format = '[@$hostname ](bg:#1a1b26 fg:#7dcfff)'
+disabled = false
+
+# Directory with improved colors
+[directory]
+style = "bg:#24283b fg:#7aa2f7"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncate_to_repo = true
+
+# Here is how you can shorten some long paths by text replacement
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Music" = " "
+"Pictures" = " "
+"Videos" = " "
+"Projects" = "󰘧 "
+
+[os]
+format = "[$symbol](bg:#1a1b26 fg:#7dcfff)"
+disabled = false
+
+[os.symbols]
+Windows = " "
+Macos = " "
+Ubuntu = " "
+Linux = " "
+
+# Git branch with better color contrast
+[git_branch]
+symbol = " "
+style = "bg:#565f89 fg:#c0caf5"
+format = '[ $symbol $branch ]($style)'
+
+# Enhanced git status with counts
+[git_status]
+style = "bg:#565f89 fg:#c0caf5"
+format = '[ $all_status$ahead_behind ]($style)'
+ahead = "⇡${count} "
+behind = "⇣${count} "
+diverged = "⇕ "
+untracked = "?${count} "
+stashed = "*${count} "
+modified = "!${count} "
+staged = "+${count} "
+renamed = "»${count} "
+deleted = "✘${count} "
+
+# Language modules with improved styling
+[nodejs]
+symbol = " "
+style = "bg:#414868 fg:#9ece6a"
+format = '[ $symbol ($version) ]($style)'
+
+[python]
+symbol = " "
+style = "bg:#414868 fg:#e0af68"
+format = '[ $symbol ($version) ]($style)'
+
+[rust]
+symbol = " "
+style = "bg:#414868 fg:#f7768e"
+format = '[ $symbol ($version) ]($style)'
+
+[golang]
+symbol = " "
+style = "bg:#414868 fg:#7dcfff"
+format = '[ $symbol ($version) ]($style)'
+
+# Command duration with better contrast
+[cmd_duration]
+min_time = 500
+style = "bg:#2e3440 fg:#bb9af7"
+format = '[ took $duration ]($style)'
+
+# Character with enhanced style
+[character]
+success_symbol = '[➜](bold green)'
+error_symbol = '[✗](bold red)' 
