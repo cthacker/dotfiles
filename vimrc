@@ -183,15 +183,13 @@ set number
 set nobackup
 set noswapfile
 
-" Press this before right-click-pasting something
-set pastetoggle=<F2>
-
 " Lets Vim know that it can use 256 colors
 set t_Co=256
 set termguicolors
 set background=dark
-"colorscheme hybrid
-"let ayucolor="mirage" " for mirage version of theme
-"let ayucolor="dark"   " for dark version of theme
-"colorscheme ayu
-colorscheme molokai
+" Use onedark colorscheme (matching Neovim) if available, fallback to molokai
+try
+  colorscheme onedark
+catch /^Vim\%((\a\+)\)\=:E185/
+  colorscheme molokai
+endtry

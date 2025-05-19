@@ -17,10 +17,15 @@ setopt share_history
 
 # Basic auto/tab completion
 autoload -Uz compinit
-compinit
-zstyle ':completion:*' menu select
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+compinit -u
+# Standard tab completion setup
+zstyle ':completion:*' completer _expand _complete _ignored _approximate
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' menu select=2
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zstyle ':completion:*' special-dirs true # Complete . and .. special directories
+setopt AUTO_PARAM_SLASH # add slash when completing directories
+unsetopt COMPLETE_ALIASES # completes alias as the real command
 
 # Useful options
 setopt auto_cd
@@ -64,10 +69,12 @@ if command -v bat &> /dev/null; then
 fi
 
 if command -v eza &> /dev/null; then
-  alias ls='eza --icons'
-  alias ll='eza --icons -l'
-  alias la='eza --icons -la'
-  alias lt='eza --icons -T' # Tree listing
+  alias ls='eza'
+  alias ll='eza -l'
+  alias la='eza -la'
+  alias lt='eza -T' # Tree listing
+  alias lrt='eza -lh --sort=modified'
+
 else
   # OS-specific ls aliases
   if [[ "$MACOS" == true ]]; then
@@ -248,9 +255,39 @@ alias gclean='git_clean_branches'
 alias gai='git_add_interactive'
 alias glg='git_log_graph'
 
+# === Python Virtual Environment Indicator === #
+# Add virtualenv indicator to the prompt
+show_virtual_env() {
+  if [ -n "$VIRTUAL_ENV" ]; then
+    echo "(🐍 $(basename $VIRTUAL_ENV)) "
+  fi
+}
+
+# Set up a simple prompt with virtualenv indicator
+export VIRTUAL_ENV_DISABLE_PROMPT=1
+setopt PROMPT_SUBST
+
+# Only use this custom prompt if Starship isn't active
+if [ -z "$STARSHIP_SHELL" ]; then
+  export PS1='$(show_virtual_env)%F{cyan}%~%f %F{green}❯%f '
+fi
+
 # === Initialize Starship Prompt === #
 if command -v starship &> /dev/null; then
-  eval "$(starship init zsh)"
+  # Create a custom prompt command that prepends the virtualenv
+  starship_prompt_cmd() {
+    # Get virtualenv indicator
+    venv_info="$(show_virtual_env)"
+
+    # Get the standard Starship prompt
+    PS1="$venv_info$(starship prompt)"
+  }
+
+  # Use precmd to set the prompt
+  precmd_functions+=(starship_prompt_cmd)
+
+  # Initialize Starship
+  eval "$(starship init zsh --print-full-init | grep -v 'precmd_functions+=(starship_precmd)')"
 else
   echo "Starship is not installed. Please install it: https://starship.rs"
 fi

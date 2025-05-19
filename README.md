@@ -2,26 +2,30 @@
 
 A clean, cross-platform dotfiles setup for macOS and Linux with modern tools.
 
-![Terminal Preview](https://user-images.githubusercontent.com/YOUR_GITHUB_ID/YOUR_REPO_NAME/main/screenshots/terminal.png)
-
 ## ✨ Features
 
 - **Cross-platform**: Works seamlessly on both macOS and Linux
 - **Modern tools**: Uses the latest terminal, shell, and editor technologies
 - **Easy installation**: Simple setup and uninstallation scripts
 - **Modular design**: Pick what you need, ignore what you don't
+- **Atom One Dark Theme**: Consistent theme across Neovim, Vim, and Tmux
 - **Auto-backup**: Your existing configuration is automatically backed up
 
 ## 🛠 What's Included
 
 - **Shell**: Zsh with [Starship](https://starship.rs/) prompt
-- **Terminal**: [Ghostty](https://ghostty.dev/) - Modern, GPU-accelerated terminal emulator
+- **Terminal**: Support for any modern terminal with true color support
 - **Text Editors**:
   - Neovim with modern plugins and native LSP for development
+  - Full Lua configuration with lazy.nvim for plugin management
+  - TreeSitter for improved syntax highlighting
+  - NvimTree for fast file navigation
+  - Telescope for fuzzy finding
+  - LSP configurations for common languages
   - Vim configuration for quick edits
-- **Terminal Multiplexer**: Tmux for session management
-- **Git**: Optimized Git configuration
-- **Utilities**:
+- **Terminal Multiplexer**: Tmux for session management with Atom One Dark theme
+- **Git**: Optimized Git configuration with helpful aliases
+- **Modern Utilities**:
   - `bat` - A better `cat` with syntax highlighting
   - `eza` - A modern replacement for `ls`
   - `fd` - A faster alternative to `find`
@@ -34,6 +38,7 @@ A clean, cross-platform dotfiles setup for macOS and Linux with modern tools.
 
 - Git
 - Zsh (recommended)
+- A Nerd Font (for icons support)
 
 ### Quick Install
 
@@ -57,11 +62,10 @@ A clean, cross-platform dotfiles setup for macOS and Linux with modern tools.
    ./scripts/install_starship.sh
    ```
 
-4. Start Neovim and install plugins:
+4. Install Neovim plugins:
    ```bash
    nvim
-   # Inside Neovim, run:
-   :PlugInstall
+   # Lazy.nvim will automatically install plugins when you first open Neovim
    ```
 
 5. Restart your terminal to apply all changes.
@@ -75,7 +79,7 @@ If you want to install only specific components, you can use the individual scri
 If you want to revert to your previous configuration:
 
 ```bash
-./uninstall.sh
+./scripts/uninstall.sh
 ```
 
 This will restore your backed-up dotfiles from `~/.dotfiles_backup`.
@@ -84,22 +88,19 @@ This will restore your backed-up dotfiles from `~/.dotfiles_backup`.
 
 ```
 dotfiles/
-├── config/               # Configuration files for various applications
+├── config/               # Configuration files for applications
 │   ├── nvim/             # Neovim configuration
-│   ├── starship/         # Starship prompt configuration
-│   └── ...               # Other config folders
+│   │   ├── init.lua      # Main Neovim entry point
+│   │   └── lua/user/     # Modular Lua configurations
+│   └── starship/         # Starship prompt configuration
 ├── scripts/              # Installation and utility scripts
-│   ├── install_starship.sh # Starship installation script
-│   ├── cleanup_prezto.sh # Script to remove Prezto
-│   └── ...               # Other utility scripts
 ├── zsh/                  # Zsh-specific files
 │   └── zshrc             # Main Zsh configuration
 ├── vim/                  # Vim configuration and plugins
-├── tmux.conf             # Tmux configuration
-├── gitconfig             # Git configuration
+├── tmux.conf             # Tmux configuration with Atom One theme
 ├── install_mac.sh        # macOS installation script
 ├── install_linux.sh      # Linux installation script
-└── uninstall.sh          # Uninstallation script
+└── CLAUDE.md             # Guide and standards for this repo
 ```
 
 ## 🔄 Keeping Updated
@@ -112,6 +113,14 @@ git pull
 ./install_mac.sh   # or install_linux.sh
 ```
 
+## 🎨 Themes and Customization
+
+The configuration uses Atom One Dark theme across all tools for a consistent experience. To modify the theme:
+
+- **Neovim**: Edit `config/nvim/lua/user/colorscheme.lua`
+- **Tmux**: Modify color variables in `tmux.conf`
+- **Starship**: Change themes with `./scripts/switch_starship_theme.sh`
+
 ## 🤝 Contributing
 
 Contributions are welcome! Feel free to open issues or submit pull requests.
@@ -119,13 +128,5 @@ Contributions are welcome! Feel free to open issues or submit pull requests.
 ## 📝 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- [Starship](https://starship.rs/) for the cross-shell prompt
-- [Ghostty](https://ghostty.dev/) for the terminal emulator
-- Various plugin authors for Neovim, Vim, and Tmux extensions
-
-
 
 
