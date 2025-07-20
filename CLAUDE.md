@@ -6,7 +6,15 @@
 - Install on Linux: `./install_linux.sh`
 - Install Starship: `./scripts/install_starship.sh`
 - Switch Starship theme: `./scripts/switch_starship_theme.sh [theme_name]`
-- Uninstall: `./uninstall.sh`
+- Uninstall: `./scripts/uninstall.sh`
+
+## Neovim Configuration
+- **Plugin Manager**: Lazy.nvim (migrated from vim-plug)
+- **Structure**: Modular Lua configuration in `config/nvim/lua/`
+- **Plugins**: Individual plugin files in `config/nvim/lua/plugins/`
+- **User Config**: Core settings in `config/nvim/lua/user/`
+- **Directory Opening**: `nvim .` automatically opens nvim-tree
+- **Legacy Support**: Sources traditional vimrc for shared settings
 
 ## Code Style Guidelines
 - **Indentation**: 2-space tabs (4-space for Python/C++)
