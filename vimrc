@@ -12,22 +12,12 @@ set noerrorbells
 set novisualbell
 set belloff=all
 
-"NERDTree
-map <leader>nn :NERDTreeToggle<CR>
+"nvim-tree (modern replacement for NERDTree)
+map <leader>nn :NvimTreeToggle<CR>
 
 
 " vimwiki/vimwiki
 let g:vimwiki_list = [{'path': '~/vimwiki/', 'syntax': 'markdown', 'ext': '.md'}]
-
-" Brief help
-" :PluginList       - lists configured plugins
-" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
-" :PluginSearch foo - searches for foo; append `!` to refresh local cache
-" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
-"
-" see :h vundle for more details or wiki for FAQ
-" Put your non-Plugin stuff after this line
-
 
 " map space bar to the <Leader>
 map <Space> <Leader>
