@@ -12,7 +12,6 @@ require('user.keymaps')  -- Key mappings
 require('user.lazy')     -- Plugin manager and plugin definitions
 
 -- Plugin configurations
-require('user.lsp')      -- LSP configuration
 require('user.telescope') -- Telescope configuration
 require('user.treesitter') -- Treesitter for better syntax highlighting
 require('user.nvim-tree') -- File explorer
