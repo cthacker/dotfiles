@@ -4,12 +4,12 @@ local opt = vim.opt
 local g = vim.g
 
 -- Leader key
-g.mapleader = " "
-g.maplocalleader = " "
+--g.mapleader = " "
+--g.maplocalleader = " "
 
 -- Line numbers
-opt.number = true
-opt.relativenumber = true
+--opt.number = true
+--opt.relativenumber = true
 
 -- Tabs & Indentation
 opt.tabstop = 2

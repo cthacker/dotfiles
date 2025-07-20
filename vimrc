@@ -12,10 +12,6 @@ set noerrorbells
 set novisualbell
 set belloff=all
 
-"nvim-tree (modern replacement for NERDTree)
-map <leader>nn :NvimTreeToggle<CR>
-
-
 " vimwiki/vimwiki
 let g:vimwiki_list = [{'path': '~/vimwiki/', 'syntax': 'markdown', 'ext': '.md'}]
 
@@ -49,13 +45,6 @@ filetype on
 filetype plugin on
 filetype plugin indent on
 
-" Configre tabs. Tabs convert to spaces
-set tabstop=2
-set shiftwidth=2
-set softtabstop=2
-set expandtab
-set autoindent
-
 " Python stuff
 au BufNewFile,BufRead *.py setlocal tabstop=4 shiftwidth=4 softtabstop=4
 
@@ -65,29 +54,6 @@ au BufNewFile,BufRead *.hpp setlocal tabstop=4 shiftwidth=4 softtabstop=4
 
 " Javascript stuff
 au BufNewFile,BufRead *.ejs,*.hbs setlocal filetype=html
-
-" Only do this part when compiled with support for autocommands.
-if has("autocmd")
-
-  " remove trailing whitespace for these languages
-  "autocmd FileType c,cpp,hpp,java,javascript,php,ruby,python autocmd BufWritePre <buffer> :%s/\s\+$//e
-
-  " Put these in an autocmd group, so that we can delete them easily.
-  augroup vimrcEx
-  au!
-
-  " When editing a file, always jump to the last known cursor position.
-  " Don't do it when the position is invalid or when inside an event handler
-  " (happens when dropping a file on gvim).
-  " Also don't do it when the mark is in the first line, that is the default
-  " position when opening a file.
-  autocmd BufReadPost *
-    \ if line("'\"") > 1 && line("'\"") <= line("$") |
-    \   exe "normal! g`\"" |
-    \ endif
-  augroup END
-
-endif " has("autocmd")
 
 " Convenient command to see the difference between the current buffer and the
 " file it was loaded from, thus the changes you made.

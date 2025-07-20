@@ -4,7 +4,6 @@
 local keymap = vim.keymap.set
 local opts = { noremap = true, silent = true }
 
--- Remap space as leader key (also in options.lua)
 keymap("", "<Space>", "<Nop>", opts)
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
@@ -17,7 +16,7 @@ keymap("n", "<C-k>", "<C-w>k", opts)
 keymap("n", "<C-l>", "<C-w>l", opts)
 
 -- Nvim-tree file explorer
--- keymap("n", "<leader>nn", ":NvimTreeToggle<CR>", opts) -- Defined in vimrc
+keymap("n", "<leader>nn", ":NvimTreeToggle<CR>", opts)
 keymap("n", "<leader>nf", ":NvimTreeFindFile<CR>", opts)
 
 -- Telescope
