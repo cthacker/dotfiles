@@ -2,7 +2,6 @@
 
 -- Import all modules
 local modules = {
-  "user.lsp",
   "user.telescope"
 }
 
@@ -48,8 +47,6 @@ vim.opt.backup = false
 vim.opt.swapfile = false
 vim.opt.undofile = true
 
--- Better completion experience
-vim.opt.completeopt = { "menuone", "noselect" }
 
 -- Performance
 vim.opt.updatetime = 300

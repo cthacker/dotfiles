@@ -17,7 +17,7 @@ keymap("n", "<C-k>", "<C-w>k", opts)
 keymap("n", "<C-l>", "<C-w>l", opts)
 
 -- Nvim-tree file explorer
-keymap("n", "<leader>nn", ":NvimTreeToggle<CR>", opts)
+-- keymap("n", "<leader>nn", ":NvimTreeToggle<CR>", opts) -- Defined in vimrc
 keymap("n", "<leader>nf", ":NvimTreeFindFile<CR>", opts)
 
 -- Telescope
@@ -65,13 +65,6 @@ keymap("n", "<leader>Y", '"+Y', opts)
 keymap("n", "<leader>p", '"+p', opts)
 keymap("n", "<leader>P", '"+P', opts)
 
--- LSP bindings
-keymap("n", "<leader>ld", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
-keymap("n", "<leader>lt", "<cmd>lua vim.lsp.buf.type_definition()<CR>", opts)
-keymap("n", "<leader>li", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts)
-keymap("n", "<leader>lf", "<cmd>lua vim.lsp.buf.references()<CR>", opts)
-keymap("n", "<leader>lr", "<cmd>lua vim.lsp.buf.rename()<CR>", opts)
-keymap("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
 
 -- Terminal mode mappings --
 -- Better terminal navigation

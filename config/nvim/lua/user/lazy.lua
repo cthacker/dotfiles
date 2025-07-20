@@ -32,30 +32,6 @@ local plugins = {
     end,
   },
 
-  -- LSP configuration
-  {
-    "neovim/nvim-lspconfig", -- LSP configurations for common servers
-    dependencies = {
-      -- LSP management
-      "williamboman/mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
-      "jose-elias-alvarez/null-ls.nvim", -- LSP diagnostics, code actions, and more
-    },
-  },
-
-  -- Autocompletion
-  {
-    "hrsh7th/nvim-cmp", -- Completion plugin
-    dependencies = {
-      "hrsh7th/cmp-buffer",
-      "hrsh7th/cmp-path",
-      "hrsh7th/cmp-cmdline",
-      "hrsh7th/cmp-nvim-lsp",
-      "L3MON4D3/LuaSnip", -- Snippet engine
-      "saadparwaiz1/cmp_luasnip", -- Luasnip completion source
-      "rafamadriz/friendly-snippets", -- Snippet collection
-    },
-  },
 
   -- Treesitter for better syntax highlighting
   {
@@ -132,6 +108,31 @@ local plugins = {
     "folke/which-key.nvim",
     event = "VeryLazy",
   },
+
+  -- Wiki functionality (migrated from vim-plug, settings in vimrc)
+  {
+    "vimwiki/vimwiki",
+  },
+
+  -- Text alignment for tables (needed for vimwiki)
+  {
+    "godlygeek/tabular",
+    cmd = {"Tabularize"},
+  },
+
+  -- Tmux integration (migrated from vim-plug)
+  {
+    "christoomey/vim-tmux-navigator",
+    event = "VeryLazy",
+  },
+
+  -- Markdown preview (migrated from vim-plug)
+  {
+    "iamcco/markdown-preview.nvim",
+    build = "cd app && yarn install",
+    ft = "markdown",
+  },
+
 }
 
 -- Load plugins

@@ -1,7 +1,7 @@
 # Dotfiles Repository Guide
 
 ## Commands
-- Install plugins: `nvim` then `:PlugInstall`
+- Install plugins: Automatically handled by Lazy.nvim on startup
 - Install on macOS: `./install_mac.sh`
 - Install on Linux: `./install_linux.sh`
 - Install Starship: `./scripts/install_starship.sh`
