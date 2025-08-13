@@ -70,7 +70,7 @@ fi
 
 if command -v eza &> /dev/null; then
   alias ls='eza'
-  alias ll='eza -l'
+  alias ll='eza -l -snew'
   alias la='eza -la'
   alias lt='eza -T' # Tree listing
   alias lrt='eza -lh --sort=modified'
@@ -234,7 +234,7 @@ git_clean_branches() {
   if ! git show-ref --quiet refs/heads/main; then
     main_branch="master"
   fi
-  
+
   echo "Cleaning branches merged into $main_branch..."
   git branch --merged $main_branch | grep -v "\* $main_branch" | xargs -n 1 git branch -d
   echo "Done!"
