@@ -64,6 +64,9 @@ keymap("n", "<leader>Y", '"+Y', opts)
 keymap("n", "<leader>p", '"+p', opts)
 keymap("n", "<leader>P", '"+P', opts)
 
+-- Markdown preview
+keymap("n", "<leader>mp", ":MarkdownPreviewToggle<CR>", opts)
+
 
 -- Terminal mode mappings --
 -- Better terminal navigation
