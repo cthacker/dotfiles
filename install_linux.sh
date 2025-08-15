@@ -15,7 +15,7 @@ if [ -f /etc/debian_version ]; then
     
     # Install dependencies
     echo "📦 Installing essential packages..."
-    sudo apt install -y neovim ripgrep tmux nodejs npm python3-pip curl wget git zsh unzip
+    sudo apt install -y neovim ripgrep tmux nodejs npm python3-pip curl wget git zsh unzip zsh-history-substring-search
     
     # Install additional packages
     sudo apt install -y bat fzf

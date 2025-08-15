@@ -18,11 +18,12 @@ setopt share_history
 # Basic auto/tab completion
 autoload -Uz compinit
 compinit -u
-# Standard tab completion setup
+# Enhanced tab completion setup (Prezto-style)
 zstyle ':completion:*' completer _expand _complete _ignored _approximate
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' menu select=2
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+# Enhanced matcher list for substring matching like Prezto
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 zstyle ':completion:*' special-dirs true # Complete . and .. special directories
 setopt AUTO_PARAM_SLASH # add slash when completing directories
 unsetopt COMPLETE_ALIASES # completes alias as the real command
@@ -41,6 +42,15 @@ if [ -f /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
   source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 elif [ -f /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
   source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+fi
+
+# zsh-history-substring-search
+if [ -f /usr/local/share/zsh-history-substring-search/zsh-history-substring-search.zsh ]; then
+  source /usr/local/share/zsh-history-substring-search/zsh-history-substring-search.zsh
+elif [ -f /opt/homebrew/share/zsh-history-substring-search/zsh-history-substring-search.zsh ]; then
+  source /opt/homebrew/share/zsh-history-substring-search/zsh-history-substring-search.zsh
+elif [ -f /usr/share/zsh-history-substring-search/zsh-history-substring-search.zsh ]; then
+  source /usr/share/zsh-history-substring-search/zsh-history-substring-search.zsh
 fi
 
 # zsh-syntax-highlighting (must be at the end of .zshrc)
@@ -198,14 +208,22 @@ fi
 # === Keybindings === #
 bindkey -e  # Use emacs key bindings
 
-# Position cursor at the end of line when using up/down arrows for history
-bindkey '^[[A' up-line-or-history       # Up arrow
-bindkey '^[[B' down-line-or-history     # Down arrow
-autoload -U history-search-end
-zle -N history-beginning-search-backward-end history-search-end
-zle -N history-beginning-search-forward-end history-search-end
-bindkey "^[[A" history-beginning-search-backward-end  # Up arrow - search history backwards
-bindkey "^[[B" history-beginning-search-forward-end   # Down arrow - search history forwards
+# Bind up/down arrows to history substring search if available, otherwise use default
+if [[ -n "$HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND" ]]; then
+  bindkey '^[[A' history-substring-search-up     # Up arrow
+  bindkey '^[[B' history-substring-search-down   # Down arrow
+  bindkey '^P' history-substring-search-up       # Ctrl+P
+  bindkey '^N' history-substring-search-down     # Ctrl+N
+else
+  # Fallback to standard history search
+  bindkey '^[[A' up-line-or-history       # Up arrow
+  bindkey '^[[B' down-line-or-history     # Down arrow
+  autoload -U history-search-end
+  zle -N history-beginning-search-backward-end history-search-end
+  zle -N history-beginning-search-forward-end history-search-end
+  bindkey "^[[A" history-beginning-search-backward-end  # Up arrow - search history backwards
+  bindkey "^[[B" history-beginning-search-forward-end   # Down arrow - search history forwards
+fi
 
 # Fix key bindings
 if [[ "$MACOS" == true ]]; then
