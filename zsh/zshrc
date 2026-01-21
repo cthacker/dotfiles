@@ -328,7 +328,7 @@ else
   echo "Starship is not installed. Please install it: https://starship.rs"
 fi
 
-eval "$(uv generate-shell-completion zsh)"
+command -v uv &> /dev/null && eval "$(uv generate-shell-completion zsh)"
 
 # Lazy-load NVM for faster shell startup
 export NVM_DIR="$HOME/.nvm"
