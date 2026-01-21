@@ -19,7 +19,14 @@ if [ -f /etc/debian_version ]; then
     
     # Install additional packages
     sudo apt install -y bat fzf
-    
+
+    # On Debian/Ubuntu, bat is installed as batcat - create symlink
+    if command -v batcat &> /dev/null && ! command -v bat &> /dev/null; then
+        mkdir -p "$HOME/.local/bin"
+        ln -sf /usr/bin/batcat "$HOME/.local/bin/bat"
+        echo "Created bat symlink for batcat"
+    fi
+
     # Install Eza (modern replacement for ls)
     if ! command -v eza &> /dev/null; then
         if [ -f /etc/debian_version ]; then
