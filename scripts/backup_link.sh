@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 echo "$(tput setaf 79)Backing up existing dotfiles to ~/.dotfiles_backup$(tput sgr 0)"
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

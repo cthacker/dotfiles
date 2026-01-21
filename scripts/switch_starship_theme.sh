@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 # Colors for better readability
 GREEN="\033[0;32m"

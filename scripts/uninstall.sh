@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 echo "$(tput setaf 79)Uninstalling dotfiles$(tput sgr 0)"
 
