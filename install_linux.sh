@@ -86,6 +86,16 @@ elif [ -f /etc/arch-release ]; then
     fi
 fi
 
+# Install fzf-tab (not available in package managers, clone from git)
+echo "📦 Installing fzf-tab..."
+FZF_TAB_DIR="$HOME/.local/share/fzf-tab"
+if [ ! -d "$FZF_TAB_DIR" ]; then
+  git clone https://github.com/Aloxaf/fzf-tab "$FZF_TAB_DIR"
+else
+  echo "fzf-tab already installed, updating..."
+  git -C "$FZF_TAB_DIR" pull
+fi
+
 # Install Python packages
 echo "🐍 Installing Python packages..."
 pip3 install --user pynvim

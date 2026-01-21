@@ -30,6 +30,7 @@ brew install starship
 brew install zsh-autosuggestions
 brew install zsh-syntax-highlighting
 brew install zsh-history-substring-search
+brew install fzf-tab
 
 # Install fonts - direct download method
 echo "🔤 Installing fonts with ligature support..."

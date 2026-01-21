@@ -37,6 +37,16 @@ setopt prompt_subst
 
 # === Plugins === #
 
+# fzf-tab (must be loaded after compinit but before other plugins)
+if [ -f /opt/homebrew/share/fzf-tab/fzf-tab.zsh ]; then
+  source /opt/homebrew/share/fzf-tab/fzf-tab.zsh
+elif [ -f /usr/local/share/fzf-tab/fzf-tab.zsh ]; then
+  source /usr/local/share/fzf-tab/fzf-tab.zsh
+elif [ -f "$HOME/.local/share/fzf-tab/fzf-tab.plugin.zsh" ]; then
+  # Git clone version uses .plugin.zsh
+  source "$HOME/.local/share/fzf-tab/fzf-tab.plugin.zsh"
+fi
+
 # zsh-autosuggestions
 if [ -f /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
   source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
