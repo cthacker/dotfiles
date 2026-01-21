@@ -1,5 +1,16 @@
 return {
   "nvim-tree/nvim-tree.lua",
+  cmd = { "NvimTreeToggle", "NvimTreeFindFile", "NvimTreeOpen", "NvimTreeClose" },
+  -- Also load when opening a directory (for `nvim .`)
+  init = function()
+    vim.api.nvim_create_autocmd("BufEnter", {
+      callback = function(args)
+        if vim.fn.isdirectory(vim.api.nvim_buf_get_name(args.buf)) == 1 then
+          require("nvim-tree.api").tree.open()
+        end
+      end,
+    })
+  end,
   dependencies = {
     "nvim-tree/nvim-web-devicons",
   },
@@ -13,7 +24,7 @@ return {
       },
       update_focused_file = {
         enable = true,
-        update_cwd = true,
+        update_root = true,
       },
       sort_by = "case_sensitive",
       view = {
