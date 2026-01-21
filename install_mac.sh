@@ -64,5 +64,5 @@ echo "🔄 Backing up and linking dotfiles..."
 source "$DOTFILES_DIR/scripts/backup_link.sh"
 
 echo "✅ Installation complete!"
-echo "Run 'nvim' and execute ':PlugInstall' to install Neovim plugins"
+echo "Neovim plugins will be automatically installed by lazy.nvim on first launch"
 echo "Restart your terminal to apply all changes"
