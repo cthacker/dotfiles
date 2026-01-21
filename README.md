@@ -28,8 +28,8 @@ A clean, cross-platform dotfiles setup for macOS and Linux with modern tools.
 - **Modern Utilities**:
   - `bat` - A better `cat` with syntax highlighting
   - `eza` - A modern replacement for `ls`
-  - `fd` - A faster alternative to `find`
   - `fzf` - Fuzzy finder for your shell
+  - `fzf-tab` - Fuzzy completion for tab (type partial matches and select with fzf)
   - `ripgrep` - Fast code searching
 
 ## 🚀 Installation
@@ -57,18 +57,13 @@ A clean, cross-platform dotfiles setup for macOS and Linux with modern tools.
    ./install_linux.sh
    ```
 
-3. Install Starship prompt:
-   ```bash
-   ./scripts/install_starship.sh
-   ```
-
-4. Install Neovim plugins:
+3. Install Neovim plugins:
    ```bash
    nvim
    # Lazy.nvim will automatically install plugins when you first open Neovim
    ```
 
-5. Restart your terminal to apply all changes.
+4. Restart your terminal to apply all changes.
 
 ### Custom Installation
 
@@ -117,7 +112,7 @@ git pull
 
 The configuration uses Atom One Dark theme across all tools for a consistent experience. To modify the theme:
 
-- **Neovim**: Edit `config/nvim/lua/user/colorscheme.lua`
+- **Neovim**: Edit `config/nvim/lua/plugins/onedark.lua`
 - **Tmux**: Modify color variables in `tmux.conf`
 - **Starship**: Change themes with `./scripts/switch_starship_theme.sh`
 
