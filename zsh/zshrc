@@ -355,6 +355,23 @@ if [ -s "$NVM_DIR/nvm.sh" ]; then
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     npx "$@"
   }
+
+  # Eagerly put the default Node version's bin on PATH so globally-installed
+  # CLIs (e.g. pi) and node itself resolve in a fresh shell WITHOUT first
+  # having to trigger nvm. Keeps lazy-loading for nvm itself.
+  _nvm_default="$(cat "$NVM_DIR/alias/default" 2>/dev/null)"
+  _nvm_default="${_nvm_default#v}"
+  if [ -n "$_nvm_default" ]; then
+    _nvm_bin="$(/bin/ls -d "$NVM_DIR/versions/node/v${_nvm_default}"*/bin 2>/dev/null | sort -V | tail -1)"
+    if [ -n "$_nvm_bin" ]; then
+      case ":$PATH:" in
+        *":$_nvm_bin:"*) ;;
+        *) export PATH="$_nvm_bin:$PATH" ;;
+      esac
+    fi
+    unset _nvm_bin
+  fi
+  unset _nvm_default
 fi
 
 # pnpm
@@ -367,3 +384,13 @@ case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
+
+# >>> grok installer >>>
+export PATH="$HOME/.grok/bin:$PATH"
+fpath=(~/.grok/completions/zsh $fpath)
+autoload -Uz compinit && compinit -C
+# <<< grok installer <<<
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:$HOME/.lmstudio/bin"
+# End of LM Studio CLI section
