@@ -18,8 +18,11 @@ return {
     onedark.load()
 
     vim.cmd([[
-      highlight Comment gui=italic
+      highlight Comment guifg=#848b98 gui=italic
+      highlight @comment guifg=#848b98 gui=italic
       highlight LineNr guifg=#777777
+      " Matching bracket: a touch more visible than the default, still subtle.
+      highlight MatchParen guibg=#4b5263 gui=bold
     ]])
   end,
 }

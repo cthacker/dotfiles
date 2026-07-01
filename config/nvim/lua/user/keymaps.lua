@@ -44,6 +44,13 @@ keymap("n", "<leader>/", ":nohlsearch<CR>", opts)
 -- Quick escape from insert mode
 keymap("i", "ii", "<ESC>", opts)
 
+-- macOS-style motion without leaving insert mode
+-- Option+h/l = move by word (needs `macos-option-as-alt` in ghostty config)
+keymap("i", "<A-h>", "<C-o>b", opts)  -- word left
+keymap("i", "<A-l>", "<C-o>w", opts)  -- word right
+-- Command+h/l = start/end of line: ghostty sends Home/End for cmd+h/cmd+l,
+-- which insert mode handles natively, so no <D-...> mapping is needed here.
+
 -- Visual mode mappings --
 -- Stay in indent mode when changing indentation
 keymap("v", "<", "<gv", opts)
