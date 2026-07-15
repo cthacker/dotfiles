@@ -23,7 +23,10 @@ A clean, cross-platform dotfiles setup for macOS and Linux with modern tools.
   - Telescope for fuzzy finding
   - LSP configurations for common languages
   - Vim configuration for quick edits
-- **Terminal Multiplexer**: Tmux for session management with Atom One Dark theme
+- **Terminal Multiplexers**:
+  - Tmux for session management with Atom One Dark theme
+  - Herdr on macOS for agent-aware workspaces, tabs, and panes
+- **Agent skills**: `bro` rewrites the previous response in plain language
 - **Git**: Optimized Git configuration with helpful aliases
 - **Modern Utilities**:
   - `bat` - A better `cat` with syntax highlighting
@@ -87,6 +90,8 @@ dotfiles/
 │   ├── nvim/             # Neovim configuration
 │   │   ├── init.lua      # Main Neovim entry point
 │   │   └── lua/user/     # Modular Lua configurations
+│   ├── agents/skills/    # Cross-agent skills (~/.agents/skills)
+│   ├── herdr/            # Herdr keybindings and settings
 │   └── starship/         # Starship prompt configuration
 ├── scripts/              # Installation and utility scripts
 ├── zsh/                  # Zsh-specific files
@@ -114,6 +119,7 @@ The configuration uses Atom One Dark theme across all tools for a consistent exp
 
 - **Neovim**: Edit `config/nvim/lua/plugins/onedark.lua`
 - **Tmux**: Modify color variables in `tmux.conf`
+- **Herdr**: Modify keybindings in `config/herdr/config.toml`
 - **Starship**: Change themes with `./scripts/switch_starship_theme.sh`
 
 ## 🤝 Contributing

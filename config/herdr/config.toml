@@ -1,0 +1,17 @@
+onboarding = false
+
+[keys]
+prefix = "backtick"
+split_horizontal = "prefix+minus"
+split_vertical = "prefix+backslash"
+
+[[keys.command]]
+key = "prefix+f"
+type = "shell"
+command = "\"$HERDR_BIN_PATH\" plugin action invoke open-file-viewer --plugin herdr-file-viewer"
+
+[experimental]
+pane_history = false
+
+[ui]
+agent_panel_sort = "spaces"

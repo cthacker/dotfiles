@@ -38,6 +38,20 @@ else
       fi
     done
 
+    # Back up Herdr's config without moving its runtime state, logs, or socket.
+    if [ -f "$HOME/.config/herdr/config.toml" ] || [ -L "$HOME/.config/herdr/config.toml" ]; then
+      echo "Backing up ~/.config/herdr/config.toml"
+      mkdir -p "$HOME/.dotfiles_backup/config/herdr"
+      mv "$HOME/.config/herdr/config.toml" "$HOME/.dotfiles_backup/config/herdr/config.toml"
+    fi
+
+    # Back up the global bro skill if one already exists.
+    if [ -e "$HOME/.agents/skills/bro" ] || [ -L "$HOME/.agents/skills/bro" ]; then
+      echo "Backing up ~/.agents/skills/bro"
+      mkdir -p "$HOME/.dotfiles_backup/agents/skills"
+      mv "$HOME/.agents/skills/bro" "$HOME/.dotfiles_backup/agents/skills/bro"
+    fi
+
     # create symlinks to the dotfiles
     echo "$(tput setaf 79)Creating symlinks in your home directory$(tput sgr 0)"
 
@@ -80,6 +94,20 @@ else
     if [ -f $DOTFILES_DIR/config/starship/starship.toml ]; then
       echo "$(tput setaf 79)Creating symlink for Starship configuration$(tput sgr 0)"
       ln -snf $DOTFILES_DIR/config/starship/starship.toml $HOME/.config/starship.toml
+    fi
+
+    # Herdr configuration
+    if [ -f "$DOTFILES_DIR/config/herdr/config.toml" ]; then
+      echo "$(tput setaf 79)Creating symlink for Herdr configuration$(tput sgr 0)"
+      mkdir -p "$HOME/.config/herdr"
+      ln -snf "$DOTFILES_DIR/config/herdr/config.toml" "$HOME/.config/herdr/config.toml"
+    fi
+
+    # Global agent skills
+    if [ -f "$DOTFILES_DIR/config/agents/skills/bro/SKILL.md" ]; then
+      echo "$(tput setaf 79)Creating symlink for global bro skill$(tput sgr 0)"
+      mkdir -p "$HOME/.agents/skills"
+      ln -snf "$DOTFILES_DIR/config/agents/skills/bro" "$HOME/.agents/skills/bro"
     fi
 
     # Tmux configuration

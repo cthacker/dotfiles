@@ -21,6 +21,7 @@ echo "📦 Installing essential packages..."
 brew install neovim
 brew install ripgrep
 brew install tmux
+brew install herdr
 brew install node
 brew install fzf
 brew install bat
