@@ -90,11 +90,11 @@ return {
       diagnostics = {
         enable = true,
         show_on_dirs = true,
-        icons = {
-          hint = "",
-          info = "",
-          warning = "",
-          error = "",
+        -- Match the editor's error-only diagnostic display. Non-error
+        -- diagnostics remain available to tools but do not decorate the tree.
+        severity = {
+          min = vim.diagnostic.severity.ERROR,
+          max = vim.diagnostic.severity.ERROR,
         },
       },
       filesystem_watchers = {
