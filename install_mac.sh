@@ -21,7 +21,6 @@ echo "📦 Installing essential packages..."
 brew install neovim
 brew install ripgrep
 brew install tmux
-brew install herdr
 brew install tree-sitter-cli
 brew install node
 brew install fzf
@@ -33,6 +32,10 @@ brew install zsh-autosuggestions
 brew install zsh-syntax-highlighting
 brew install zsh-history-substring-search
 brew install fzf-tab
+
+# Install herdr with the official installer (the brew formula had issues); installs to ~/.local/bin
+echo "🐑 Installing herdr..."
+curl -fsSL https://herdr.dev/install.sh | sh
 
 # Install fonts - direct download method
 echo "🔤 Installing fonts with ligature support..."

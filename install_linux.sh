@@ -214,6 +214,10 @@ if command -v fc-cache &> /dev/null; then
   fc-cache -f
 fi
 
+# Install herdr with the official installer; installs to ~/.local/bin
+echo "🐑 Installing herdr..."
+curl -fsSL https://herdr.dev/install.sh | sh
+
 # Install starship prompt
 curl -sS https://starship.rs/install.sh | sh
 
