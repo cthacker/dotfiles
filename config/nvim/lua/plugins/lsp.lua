@@ -10,6 +10,11 @@ return {
     "mason-org/mason-lspconfig.nvim",
   },
   config = function()
+    -- Keep all Python clients on one position encoding. Mixed UTF-8/UTF-16
+    -- clients make edits and diagnostics drift on lines containing non-ASCII.
+    local capabilities = vim.lsp.protocol.make_client_capabilities()
+    capabilities.general.positionEncodings = { "utf-16" }
+
     -- Install the servers if missing; we enable them ourselves below.
     require("mason-lspconfig").setup({
       ensure_installed = { "basedpyright", "ruff" },
@@ -20,6 +25,7 @@ return {
     -- so you don't get two popups for the same symbol. Only report likely bugs:
     -- syntax/runtime failures and undefined names, not style or unused-code noise.
     vim.lsp.config("ruff", {
+      capabilities = capabilities,
       init_options = {
         settings = {
           lint = { select = { "E9", "F63", "F7", "F82" } },
@@ -33,6 +39,7 @@ return {
     -- Keep basedpyright for completion, hover, and navigation, but leave type
     -- checking off. Ruff above remains responsible for actionable diagnostics.
     vim.lsp.config("basedpyright", {
+      capabilities = capabilities,
       settings = {
         basedpyright = {
           analysis = {

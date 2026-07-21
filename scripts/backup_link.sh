@@ -1,115 +1,76 @@
 #!/usr/bin/env bash
 set -e
-echo "$(tput setaf 79)Backing up existing dotfiles to ~/.dotfiles_backup$(tput sgr 0)"
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+BACKUP_DIR="$HOME/.dotfiles_backup"
+
+echo "$(tput setaf 79)Backing up existing dotfiles to $BACKUP_DIR$(tput sgr 0)"
 echo "Dotfiles directory: $DOTFILES_DIR"
+mkdir -p "$BACKUP_DIR"
 
-if [ -d "$HOME/.dotfiles_backup/" ]
-then
-    echo "$(tput setaf 197)Backup already exists cannot overwrite$(tput sgr 0)"
+# Back up an existing path once, then replace it with a symlink. Re-running the
+# installer is safe: links that already point into this checkout are left alone,
+# and a newer user-owned file is never overwritten when a backup already exists.
+link_managed_path() {
+  local source_path=$1
+  local target_path=$2
+  local backup_relative=$3
+  local backup_path="$BACKUP_DIR/$backup_relative"
 
-else
-    mkdir -p ${HOME}/.dotfiles_backup
+  if [ ! -e "$source_path" ] && [ ! -L "$source_path" ]; then
+    echo "$(tput setaf 197)Skipping $target_path: source does not exist at $source_path$(tput sgr 0)"
+    return
+  fi
 
-    # array of files we backup
-    declare -a all_files=(config/nvim vim vimrc bashrc bash_profile gitconfig zsh/zshrc config/starship tmux.conf)
+  if [ -L "$target_path" ] && [ "$target_path" -ef "$source_path" ]; then
+    return
+  fi
 
-    declare -a symlink_files=(vim vimrc bashrc bash_profile gitconfig)
-    declare -a zsh_files=(zsh/zshrc)
-
-    # loop through files that we backup and move to backup folder
-    for i in ${all_files[@]}
-    do
-      # Extract the basename for the destination path
-      file_basename=$(basename $i)
-      
-      # Special case for zsh files which are now in a subdirectory
-      if [[ $i == zsh/* ]]; then
-        if [ -f ~/.$file_basename ]; then
-          echo "Backing up ~/.$file_basename"
-          mv ~/.$file_basename ~/.dotfiles_backup/
-        fi
-      else
-        if [ -f ~/.$i ] || [ -d ~/.$i ]; then
-          echo "Backing up ~/.$i"
-          mv ~/.$i ~/.dotfiles_backup/
-        fi
-      fi
-    done
-
-    # Back up Herdr's config without moving its runtime state, logs, or socket.
-    if [ -f "$HOME/.config/herdr/config.toml" ] || [ -L "$HOME/.config/herdr/config.toml" ]; then
-      echo "Backing up ~/.config/herdr/config.toml"
-      mkdir -p "$HOME/.dotfiles_backup/config/herdr"
-      mv "$HOME/.config/herdr/config.toml" "$HOME/.dotfiles_backup/config/herdr/config.toml"
+  if [ -e "$target_path" ] || [ -L "$target_path" ]; then
+    if [ -e "$backup_path" ] || [ -L "$backup_path" ]; then
+      echo "$(tput setaf 197)Skipping $target_path: backup already exists at $backup_path$(tput sgr 0)"
+      return
     fi
 
-    # Back up the global bro skill if one already exists.
-    if [ -e "$HOME/.agents/skills/bro" ] || [ -L "$HOME/.agents/skills/bro" ]; then
-      echo "Backing up ~/.agents/skills/bro"
-      mkdir -p "$HOME/.dotfiles_backup/agents/skills"
-      mv "$HOME/.agents/skills/bro" "$HOME/.dotfiles_backup/agents/skills/bro"
-    fi
+    echo "Backing up $target_path"
+    mkdir -p "$(dirname "$backup_path")"
+    mv "$target_path" "$backup_path"
+  fi
 
-    # create symlinks to the dotfiles
-    echo "$(tput setaf 79)Creating symlinks in your home directory$(tput sgr 0)"
+  echo "$(tput setaf 79)Creating symlink for $target_path$(tput sgr 0)"
+  mkdir -p "$(dirname "$target_path")"
+  ln -snf "$source_path" "$target_path"
+}
 
-    for i in ${symlink_files[@]}
-    do
-      ln -snf $DOTFILES_DIR/$i ~/.$i
-    done
+echo "$(tput setaf 79)Creating symlinks in your home directory$(tput sgr 0)"
 
-    # Create symlinks for zsh files
-    for i in ${zsh_files[@]}
-    do
-      file_basename=$(basename $i)
-      ln -snf $DOTFILES_DIR/$i ~/.$file_basename
-    done
+link_managed_path "$DOTFILES_DIR/vimrc" "$HOME/.vimrc" "vimrc"
+link_managed_path "$DOTFILES_DIR/zsh/zshrc" "$HOME/.zshrc" "zshrc"
+link_managed_path "$DOTFILES_DIR/tmux.conf" "$HOME/.tmux.conf" "tmux.conf"
 
-    # Handle Neovim config
-    if [ ! -d $HOME/.config/nvim ]; then
-      echo "$(tput setaf 79)Creating ~/.config/nvim$(tput sgr 0)"
-      mkdir -p $HOME/.config/nvim
-    fi
+# Link Neovim one top-level entry at a time. This preserves unrelated files in
+# ~/.config/nvim and gives uninstall an exact set of managed paths to remove.
+for config_path in "$DOTFILES_DIR"/config/nvim/*; do
+  if [ -e "$config_path" ]; then
+    config_name="$(basename "$config_path")"
+    link_managed_path \
+      "$config_path" \
+      "$HOME/.config/nvim/$config_name" \
+      "config/nvim/$config_name"
+  fi
+done
 
-    for config in $DOTFILES_DIR/config/nvim/*; do
-      target=$HOME/.config/nvim/$( basename $config )
-      echo ${config}
-      echo ${target}
-      if [ -e $target ]; then
-        echo "$(tput setaf 245)~${target#$HOME} already exists ... skipping$(tput sgr 0)"
-      else
-        echo "$(tput setaf 79)Creating symlink for ${config}$(tput sgr 0)"
-        ln -snf $config $target
-      fi
-    done
+link_managed_path \
+  "$DOTFILES_DIR/config/starship/starship.toml" \
+  "$HOME/.config/starship.toml" \
+  "config/starship.toml"
 
-    # Starship configuration
-    if [ ! -d $HOME/.config ]; then
-      echo "$(tput setaf 79)Creating ~/.config$(tput sgr 0)"
-      mkdir -p $HOME/.config
-    fi
+link_managed_path \
+  "$DOTFILES_DIR/config/herdr/config.toml" \
+  "$HOME/.config/herdr/config.toml" \
+  "config/herdr/config.toml"
 
-    if [ -f $DOTFILES_DIR/config/starship/starship.toml ]; then
-      echo "$(tput setaf 79)Creating symlink for Starship configuration$(tput sgr 0)"
-      ln -snf $DOTFILES_DIR/config/starship/starship.toml $HOME/.config/starship.toml
-    fi
-
-    # Herdr configuration
-    if [ -f "$DOTFILES_DIR/config/herdr/config.toml" ]; then
-      echo "$(tput setaf 79)Creating symlink for Herdr configuration$(tput sgr 0)"
-      mkdir -p "$HOME/.config/herdr"
-      ln -snf "$DOTFILES_DIR/config/herdr/config.toml" "$HOME/.config/herdr/config.toml"
-    fi
-
-    # Global agent skills
-    if [ -f "$DOTFILES_DIR/config/agents/skills/bro/SKILL.md" ]; then
-      echo "$(tput setaf 79)Creating symlink for global bro skill$(tput sgr 0)"
-      mkdir -p "$HOME/.agents/skills"
-      ln -snf "$DOTFILES_DIR/config/agents/skills/bro" "$HOME/.agents/skills/bro"
-    fi
-
-    # Tmux configuration
-    ln -snf $DOTFILES_DIR/tmux.conf $HOME/.tmux.conf
-fi
+link_managed_path \
+  "$DOTFILES_DIR/config/agents/skills/bro" \
+  "$HOME/.agents/skills/bro" \
+  "agents/skills/bro"

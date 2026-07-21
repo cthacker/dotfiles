@@ -67,13 +67,6 @@ elif [ -f /usr/share/zsh-history-substring-search/zsh-history-substring-search.z
   source /usr/share/zsh-history-substring-search/zsh-history-substring-search.zsh
 fi
 
-# zsh-syntax-highlighting (must be at the end of .zshrc)
-if [ -f /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
-  source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-elif [ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
-  source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-fi
-
 # === Alias Definitions === #
 
 # OS detection
@@ -360,16 +353,33 @@ if [ -s "$NVM_DIR/nvm.sh" ]; then
   # CLIs (e.g. pi) and node itself resolve in a fresh shell WITHOUT first
   # having to trigger nvm. Keeps lazy-loading for nvm itself.
   _nvm_default="$(cat "$NVM_DIR/alias/default" 2>/dev/null)"
-  _nvm_default="${_nvm_default#v}"
   if [ -n "$_nvm_default" ]; then
-    _nvm_bin="$(/bin/ls -d "$NVM_DIR/versions/node/v${_nvm_default}"*/bin 2>/dev/null | sort -V | tail -1)"
+    _nvm_version="${_nvm_default#v}"
+    _nvm_bins=("$NVM_DIR"/versions/node/v${_nvm_version}*/bin(N))
+    _nvm_bin="$(printf '%s\n' "${_nvm_bins[@]}" | sort -V | tail -1)"
+
+    # Symbolic defaults such as node, stable, and lts/* do not map directly to
+    # a version directory. Resolve those in a subshell so nvm remains lazy in
+    # the interactive shell itself.
+    if [ -z "$_nvm_bin" ]; then
+      _nvm_node="$(
+        unset -f nvm node npm npx
+        . "$NVM_DIR/nvm.sh" --no-use >/dev/null 2>&1
+        nvm which "$_nvm_default" 2>/dev/null
+      )"
+      if [ -x "$_nvm_node" ]; then
+        _nvm_bin="${_nvm_node:h}"
+      fi
+      unset _nvm_node
+    fi
+
     if [ -n "$_nvm_bin" ]; then
       case ":$PATH:" in
         *":$_nvm_bin:"*) ;;
         *) export PATH="$_nvm_bin:$PATH" ;;
       esac
     fi
-    unset _nvm_bin
+    unset _nvm_bin _nvm_bins _nvm_version
   fi
   unset _nvm_default
 fi
@@ -386,11 +396,28 @@ case ":$PATH:" in
 esac
 
 # >>> grok installer >>>
-export PATH="$HOME/.grok/bin:$PATH"
-fpath=(~/.grok/completions/zsh $fpath)
-autoload -Uz compinit && compinit -C
+case ":$PATH:" in
+  *":$HOME/.grok/bin:"*) ;;
+  *) export PATH="$HOME/.grok/bin:$PATH" ;;
+esac
+_grok_completion_dir="$HOME/.grok/completions/zsh"
+if [ -d "$_grok_completion_dir" ] && (( ! ${fpath[(Ie)$_grok_completion_dir]} )); then
+  fpath=("$_grok_completion_dir" $fpath)
+  autoload -Uz compinit && compinit -C
+fi
+unset _grok_completion_dir
 # <<< grok installer <<<
 
 # Added by LM Studio CLI (lms)
-export PATH="$PATH:$HOME/.lmstudio/bin"
+case ":$PATH:" in
+  *":$HOME/.lmstudio/bin:"*) ;;
+  *) export PATH="$PATH:$HOME/.lmstudio/bin" ;;
+esac
 # End of LM Studio CLI section
+
+# zsh-syntax-highlighting must be sourced after every widget and completion.
+if [ -f /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
+  source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+elif [ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
+  source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+fi

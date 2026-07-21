@@ -1,86 +1,97 @@
 #!/usr/bin/env bash
 set -e
 
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+BACKUP_DIR="$HOME/.dotfiles_backup"
+
 echo "$(tput setaf 79)Uninstalling dotfiles$(tput sgr 0)"
 
-# Check if backup directory exists
-if [ ! -d "$HOME/.dotfiles_backup/" ]; then
-    echo "$(tput setaf 197)No backup directory found at ~/.dotfiles_backup. Cannot uninstall.$(tput sgr 0)"
-    exit 1
+if [ ! -d "$BACKUP_DIR" ]; then
+  echo "$(tput setaf 197)No backup directory found at $BACKUP_DIR. Cannot uninstall.$(tput sgr 0)"
+  exit 1
 fi
 
-# array of files to restore from backup
-declare -a all_files=(
-    "vimrc" 
-    "vim" 
-    "bashrc" 
-    "bash_profile" 
-    "gitconfig" 
-    "zshrc" 
-    "config/nvim"
-)
+# Remove only a symlink managed by this checkout, then restore its backup when
+# the destination is clear. Real files and unrelated configuration are kept.
+unlink_and_restore() {
+  local source_path=$1
+  local target_path=$2
+  local backup_relative=$3
+  local legacy_backup_relative=${4:-}
+  local legacy_backup_path
+  local link_destination
+  local backup_path="$BACKUP_DIR/$backup_relative"
 
-# Remove symlinks and restore from backup if available
-for i in "${all_files[@]}"; do
-    # Remove symlink
-    if [ -L "$HOME/.$i" ]; then
-        echo "$(tput setaf 79)Removing symlink ~/.$i$(tput sgr 0)"
-        rm -f "$HOME/.$i"
-    elif [ -d "$HOME/.$i" ]; then
-        echo "$(tput setaf 79)Removing directory ~/.$i$(tput sgr 0)"
-        rm -rf "$HOME/.$i"
+  if [ ! -e "$backup_path" ] && [ ! -L "$backup_path" ] \
+      && [ -n "$legacy_backup_relative" ]; then
+    legacy_backup_path="$BACKUP_DIR/$legacy_backup_relative"
+    if [ -e "$legacy_backup_path" ] || [ -L "$legacy_backup_path" ]; then
+      backup_path="$legacy_backup_path"
+    fi
+  fi
+
+  if [ -L "$target_path" ]; then
+    link_destination="$(readlink "$target_path")"
+    if { [ -e "$source_path" ] && [ "$target_path" -ef "$source_path" ]; } \
+        || [ "$link_destination" = "$source_path" ]; then
+      echo "$(tput setaf 79)Removing symlink $target_path$(tput sgr 0)"
+      rm -f "$target_path"
+    fi
+  fi
+
+  if [ -e "$backup_path" ] || [ -L "$backup_path" ]; then
+    if [ -e "$target_path" ] || [ -L "$target_path" ]; then
+      echo "$(tput setaf 197)Skipping restore for $target_path: destination already exists$(tput sgr 0)"
+      return
     fi
 
-    # Restore from backup
-    if [ -e "$HOME/.dotfiles_backup/$i" ] || [ -d "$HOME/.dotfiles_backup/$i" ]; then
-        echo "$(tput setaf 79)Restoring ~/.$i from backup$(tput sgr 0)"
-        cp -R "$HOME/.dotfiles_backup/$i" "$HOME/.$i"
-    fi
+    echo "$(tput setaf 79)Restoring $target_path from backup$(tput sgr 0)"
+    mkdir -p "$(dirname "$target_path")"
+    cp -R "$backup_path" "$target_path"
+  fi
+}
+
+unlink_and_restore "$DOTFILES_DIR/vim" "$HOME/.vim" "vim" ".vim"
+unlink_and_restore "$DOTFILES_DIR/vimrc" "$HOME/.vimrc" "vimrc" ".vimrc"
+unlink_and_restore "$DOTFILES_DIR/bashrc" "$HOME/.bashrc" "bashrc" ".bashrc"
+unlink_and_restore "$DOTFILES_DIR/bash_profile" "$HOME/.bash_profile" "bash_profile" ".bash_profile"
+unlink_and_restore "$DOTFILES_DIR/gitconfig" "$HOME/.gitconfig" "gitconfig" ".gitconfig"
+unlink_and_restore "$DOTFILES_DIR/zsh/zshrc" "$HOME/.zshrc" "zshrc" ".zshrc"
+unlink_and_restore "$DOTFILES_DIR/tmux.conf" "$HOME/.tmux.conf" "tmux.conf" ".tmux.conf"
+
+for config_path in "$DOTFILES_DIR"/config/nvim/*; do
+  if [ -e "$config_path" ]; then
+    config_name="$(basename "$config_path")"
+    unlink_and_restore \
+      "$config_path" \
+      "$HOME/.config/nvim/$config_name" \
+      "config/nvim/$config_name"
+  fi
 done
 
-# Handle tmux configuration
-if [ -L "$HOME/.tmux.conf" ]; then
-    echo "$(tput setaf 79)Removing tmux configuration symlink$(tput sgr 0)"
-    rm -f "$HOME/.tmux.conf"
-    
-    if [ -e "$HOME/.dotfiles_backup/tmux.conf" ]; then
-        echo "$(tput setaf 79)Restoring tmux configuration from backup$(tput sgr 0)"
-        cp "$HOME/.dotfiles_backup/tmux.conf" "$HOME/.tmux.conf"
-    fi
+# Compatibility with backups made by the previous installer, which moved the
+# entire Neovim directory to ~/.dotfiles_backup/nvim.
+if [ -d "$BACKUP_DIR/nvim" ]; then
+  echo "$(tput setaf 79)Restoring legacy Neovim backup$(tput sgr 0)"
+  mkdir -p "$HOME/.config/nvim"
+  cp -R -n "$BACKUP_DIR/nvim/." "$HOME/.config/nvim/"
 fi
 
-# Handle Starship configuration
-if [ -L "$HOME/.config/starship.toml" ]; then
-    echo "$(tput setaf 79)Removing Starship configuration symlink$(tput sgr 0)"
-    rm -f "$HOME/.config/starship.toml"
-fi
+unlink_and_restore \
+  "$DOTFILES_DIR/config/starship/starship.toml" \
+  "$HOME/.config/starship.toml" \
+  "config/starship.toml"
 
-# Handle Herdr configuration without disturbing its runtime state.
-if [ -L "$HOME/.config/herdr/config.toml" ]; then
-    echo "$(tput setaf 79)Removing Herdr configuration symlink$(tput sgr 0)"
-    rm -f "$HOME/.config/herdr/config.toml"
-fi
+unlink_and_restore \
+  "$DOTFILES_DIR/config/herdr/config.toml" \
+  "$HOME/.config/herdr/config.toml" \
+  "config/herdr/config.toml"
 
-if [ -f "$HOME/.dotfiles_backup/config/herdr/config.toml" ]; then
-    echo "$(tput setaf 79)Restoring Herdr configuration from backup$(tput sgr 0)"
-    mkdir -p "$HOME/.config/herdr"
-    cp "$HOME/.dotfiles_backup/config/herdr/config.toml" "$HOME/.config/herdr/config.toml"
-fi
-
-# Handle the global bro skill.
-if [ -L "$HOME/.agents/skills/bro" ]; then
-    echo "$(tput setaf 79)Removing global bro skill symlink$(tput sgr 0)"
-    rm -f "$HOME/.agents/skills/bro"
-fi
-
-if [ -e "$HOME/.dotfiles_backup/agents/skills/bro" ]; then
-    echo "$(tput setaf 79)Restoring global bro skill from backup$(tput sgr 0)"
-    mkdir -p "$HOME/.agents/skills"
-    cp -R "$HOME/.dotfiles_backup/agents/skills/bro" "$HOME/.agents/skills/bro"
-fi
+unlink_and_restore \
+  "$DOTFILES_DIR/config/agents/skills/bro" \
+  "$HOME/.agents/skills/bro" \
+  "agents/skills/bro"
 
 echo "$(tput setaf 79)Uninstallation complete!$(tput sgr 0)"
-echo "$(tput setaf 79)Your original dotfiles have been restored from ~/.dotfiles_backup/$(tput sgr 0)"
-echo "$(tput setaf 79)You may want to restart your terminal to apply changes.$(tput sgr 0)"
-
-
+echo "Your original dotfiles have been restored from $BACKUP_DIR when available."
+echo "You may want to restart your terminal to apply changes."

@@ -22,6 +22,7 @@ brew install neovim
 brew install ripgrep
 brew install tmux
 brew install herdr
+brew install tree-sitter-cli
 brew install node
 brew install fzf
 brew install bat
