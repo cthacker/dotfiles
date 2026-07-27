@@ -92,6 +92,11 @@ unlink_and_restore \
   "$HOME/.agents/skills/bro" \
   "agents/skills/bro"
 
+unlink_and_restore \
+  "$DOTFILES_DIR/scripts/update_ai.sh" \
+  "$HOME/.local/bin/update-ai" \
+  "local/bin/update-ai"
+
 echo "$(tput setaf 79)Uninstallation complete!$(tput sgr 0)"
 echo "Your original dotfiles have been restored from $BACKUP_DIR when available."
 echo "You may want to restart your terminal to apply changes."

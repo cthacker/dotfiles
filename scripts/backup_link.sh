@@ -74,3 +74,10 @@ link_managed_path \
   "$DOTFILES_DIR/config/agents/skills/bro" \
   "$HOME/.agents/skills/bro" \
   "agents/skills/bro"
+
+# Expose repo scripts as commands on PATH. ~/.local/bin is prepended to PATH by
+# zshrc, and these are plain bash scripts, so they work from any shell.
+link_managed_path \
+  "$DOTFILES_DIR/scripts/update_ai.sh" \
+  "$HOME/.local/bin/update-ai" \
+  "local/bin/update-ai"

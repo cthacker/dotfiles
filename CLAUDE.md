@@ -6,6 +6,7 @@
 - Install on Linux: `./install_linux.sh`
 - Install Starship: `./scripts/install_starship.sh`
 - Switch Starship theme: `./scripts/switch_starship_theme.sh [theme_name]`
+- Update AI tooling: `update-ai` (from `./scripts/update_ai.sh`, symlinked to `~/.local/bin/update-ai`)
 - Uninstall: `./scripts/uninstall.sh`
 
 ## Neovim Configuration

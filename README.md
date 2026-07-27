@@ -113,6 +113,39 @@ git pull
 ./install_mac.sh   # or install_linux.sh
 ```
 
+### Updating AI tooling
+
+`update-ai` updates every AI/agent CLI on the machine in one pass. It is
+symlinked to `~/.local/bin/update-ai` by the installer, so it is available from
+any shell.
+
+```bash
+update-ai                 # update everything that is installed
+update-ai claude codex     # update only the named tools
+update-ai --list           # show known tools and whether each is installed
+update-ai --help
+```
+
+Tools that are not installed are skipped, and one tool failing does not stop the
+others — the run ends with a summary and a non-zero exit if anything failed.
+
+| Tool | Install method | Update performed |
+| --- | --- | --- |
+| `herdr` | official installer → `~/.local/bin` | `herdr update` |
+| `pi` | npm global (nvm node) | `pi update --all` (pi + extensions) |
+| `omp` | standalone binary → `~/.local/bin` | `omp update`, `omp update --plugins` |
+| `claude` | native installer → `~/.local/bin` | `claude update`, `claude plugin marketplace update` |
+| `codex` | Homebrew cask | `brew upgrade --cask codex` |
+| `grok` | binary in `~/.grok/bin` | `grok update` |
+| `amp` | binary in `~/.amp/bin` | `amp update` |
+| `cursor-agent` | binary in `~/.local/bin` | `cursor-agent update` |
+| `gemini` | npm global (Homebrew node) | `npm install -g @google/gemini-cli@latest` |
+
+Gemini CLI has no self-update subcommand, and Node CLIs may live under either
+Homebrew's node or an nvm-managed node — each with its own global prefix. The
+script detects which `npm` actually owns the package before reinstalling, so it
+never installs a stray second copy under the wrong prefix.
+
 ## 🎨 Themes and Customization
 
 The configuration uses Atom One Dark theme across all tools for a consistent experience. To modify the theme:
