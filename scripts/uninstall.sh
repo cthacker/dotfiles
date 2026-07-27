@@ -87,10 +87,39 @@ unlink_and_restore \
   "$HOME/.config/herdr/config.toml" \
   "config/herdr/config.toml"
 
-unlink_and_restore \
-  "$DOTFILES_DIR/config/agents/skills/bro" \
-  "$HOME/.agents/skills/bro" \
-  "agents/skills/bro"
+# Mirror of link_skill in backup_link.sh: skills are linked flat into both skill
+# roots regardless of whether they sit at the top level or under experimental/.
+unlink_skill() {
+  local skill_path=$1
+  local skill_name
+  skill_name="$(basename "$skill_path")"
+
+  unlink_and_restore \
+    "$skill_path" \
+    "$HOME/.agents/skills/$skill_name" \
+    "agents/skills/$skill_name"
+
+  unlink_and_restore \
+    "$skill_path" \
+    "$HOME/.claude/skills/$skill_name" \
+    "claude/skills/$skill_name"
+}
+
+for skill_path in "$DOTFILES_DIR"/config/agents/skills/*/; do
+  skill_path="${skill_path%/}"
+  if [ ! -d "$skill_path" ] || [ "$(basename "$skill_path")" = "experimental" ]; then
+    continue
+  fi
+  unlink_skill "$skill_path"
+done
+
+for skill_path in "$DOTFILES_DIR"/config/agents/skills/experimental/*/; do
+  skill_path="${skill_path%/}"
+  if [ ! -d "$skill_path" ]; then
+    continue
+  fi
+  unlink_skill "$skill_path"
+done
 
 unlink_and_restore \
   "$DOTFILES_DIR/scripts/update_ai.sh" \

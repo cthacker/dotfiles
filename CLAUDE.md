@@ -17,6 +17,12 @@
 - **Directory Opening**: `nvim .` automatically opens nvim-tree
 - **Legacy Support**: Sources traditional vimrc for shared settings
 
+## Agent Skills
+- **Location**: `config/agents/skills/<name>/SKILL.md`; skills still being trialled go in `config/agents/skills/experimental/<name>/`
+- **Linking**: `scripts/backup_link.sh` links each skill flat into both `~/.agents/skills/` (Codex, pi) and `~/.claude/skills/` (Claude Code, amp) — never nested, since tools disagree on whether discovery recurses
+- **Invocation**: set `disable-model-invocation: true` so skills only fire via `/<name>`
+- **Self-contained**: a skill must never reference other skills or paths outside its own directory
+
 ## Code Style Guidelines
 - **Indentation**: 2-space tabs (4-space for Python/C++)
 - **Line Length**: Max 100 characters

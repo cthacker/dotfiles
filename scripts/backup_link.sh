@@ -26,6 +26,18 @@ link_managed_path() {
     return
   fi
 
+  # A symlink that already points somewhere inside this checkout is ours, even
+  # when it is stale or dangling because a file moved. Replace it outright: it
+  # is not user data, and backing it up would litter the backup directory with
+  # broken links that uninstall would later try to restore.
+  if [ -L "$target_path" ]; then
+    case "$(readlink "$target_path")" in
+      "$DOTFILES_DIR"/*)
+        rm -f "$target_path"
+        ;;
+    esac
+  fi
+
   if [ -e "$target_path" ] || [ -L "$target_path" ]; then
     if [ -e "$backup_path" ] || [ -L "$backup_path" ]; then
       echo "$(tput setaf 197)Skipping $target_path: backup already exists at $backup_path$(tput sgr 0)"
@@ -70,10 +82,47 @@ link_managed_path \
   "$HOME/.config/herdr/config.toml" \
   "config/herdr/config.toml"
 
-link_managed_path \
-  "$DOTFILES_DIR/config/agents/skills/bro" \
-  "$HOME/.agents/skills/bro" \
-  "agents/skills/bro"
+# Link one skill directory into both skill roots: ~/.agents/skills is read by
+# Codex and pi, ~/.claude/skills by Claude Code.
+#
+# Links are always flat, one directory per skill, even for skills grouped under
+# experimental/ in this repo. Discovery differs per tool — amp recurses into
+# subdirectories of ~/.claude/skills but ignores ~/.agents/skills entirely — so a
+# nested layout would load unevenly. The experimental/ grouping is a repo-side
+# convention only; what lands in the skill roots looks identical either way.
+link_skill() {
+  local skill_path=$1
+  local skill_name
+  skill_name="$(basename "$skill_path")"
+
+  link_managed_path \
+    "$skill_path" \
+    "$HOME/.agents/skills/$skill_name" \
+    "agents/skills/$skill_name"
+
+  link_managed_path \
+    "$skill_path" \
+    "$HOME/.claude/skills/$skill_name" \
+    "claude/skills/$skill_name"
+}
+
+# Stable skills live at the top level; skills still being trialled live under
+# experimental/ so they are easy to spot and remove. Both are linked the same way.
+for skill_path in "$DOTFILES_DIR"/config/agents/skills/*/; do
+  skill_path="${skill_path%/}"
+  if [ ! -d "$skill_path" ] || [ "$(basename "$skill_path")" = "experimental" ]; then
+    continue
+  fi
+  link_skill "$skill_path"
+done
+
+for skill_path in "$DOTFILES_DIR"/config/agents/skills/experimental/*/; do
+  skill_path="${skill_path%/}"
+  if [ ! -d "$skill_path" ]; then
+    continue
+  fi
+  link_skill "$skill_path"
+done
 
 # Expose repo scripts as commands on PATH. ~/.local/bin is prepended to PATH by
 # zshrc, and these are plain bash scripts, so they work from any shell.

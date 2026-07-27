@@ -90,7 +90,8 @@ dotfiles/
 │   ├── nvim/             # Neovim configuration
 │   │   ├── init.lua      # Main Neovim entry point
 │   │   └── lua/user/     # Modular Lua configurations
-│   ├── agents/skills/    # Cross-agent skills (~/.agents/skills)
+│   ├── agents/skills/    # Cross-agent skills
+│   │   └── experimental/ # Skills still being trialled
 │   ├── herdr/            # Herdr keybindings and settings
 │   └── starship/         # Starship prompt configuration
 ├── scripts/              # Installation and utility scripts
@@ -145,6 +146,32 @@ Gemini CLI has no self-update subcommand, and Node CLIs may live under either
 Homebrew's node or an nvm-managed node — each with its own global prefix. The
 script detects which `npm` actually owns the package before reinstalling, so it
 never installs a stray second copy under the wrong prefix.
+
+## 🧠 Agent Skills
+
+Skills live in `config/agents/skills/`. Anything settled sits at the top level;
+anything still being trialled goes in `config/agents/skills/experimental/`.
+
+The installer links every skill into **both** skill roots, since different tools
+read different ones:
+
+- `~/.agents/skills/<name>` — Codex and pi
+- `~/.claude/skills/<name>` — Claude Code and amp
+
+Links are always **flat**, one directory per skill, even for skills under
+`experimental/`. Discovery is not consistent across tools — amp recurses into
+subdirectories of `~/.claude/skills` but ignores `~/.agents/skills` altogether —
+so a nested layout would load unevenly. `experimental/` is a repo-side convention
+only; what lands in the skill roots is identical either way.
+
+To add a skill, create `config/agents/skills/experimental/<name>/SKILL.md` and
+re-run the installer (or `./scripts/backup_link.sh`). To retire one, delete the
+directory and re-run `./scripts/uninstall.sh`, which removes both links. Promote
+a skill by moving it out of `experimental/` to the top level and re-running the
+installer.
+
+New skills should set `disable-model-invocation: true` in their frontmatter so
+they only fire when invoked explicitly as `/<name>`.
 
 ## 🎨 Themes and Customization
 
