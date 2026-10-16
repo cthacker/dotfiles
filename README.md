@@ -137,8 +137,6 @@ others — the run ends with a summary and a non-zero exit if anything failed.
 | `claude` | native installer → `~/.local/bin` | `claude update`, `claude plugin marketplace update` |
 | `codex` | Homebrew cask | `brew upgrade --cask codex` |
 | `grok` | binary in `~/.grok/bin` | `grok update` |
-| `amp` | binary in `~/.amp/bin` | `amp update` |
-| `cursor-agent` | binary in `~/.local/bin` | `cursor-agent update` |
 | `gemini` | npm global (Homebrew node) | `npm install -g @google/gemini-cli@latest` |
 
 Gemini CLI has no self-update subcommand, and Node CLIs may live under either
@@ -155,12 +153,12 @@ The installer links every skill into **both** skill roots, since different tools
 read different ones:
 
 - `~/.agents/skills/<name>` — Codex and pi
-- `~/.claude/skills/<name>` — Claude Code and amp
+- `~/.claude/skills/<name>` — Claude Code
 
 Links are always **flat**, one directory per skill, even for skills under
-`experimental/`. Discovery is not consistent across tools — amp recurses into
-subdirectories of `~/.claude/skills` but ignores `~/.agents/skills` altogether —
-so a nested layout would load unevenly. `experimental/` is a repo-side convention
+`experimental/`. Discovery is not consistent across tools — some recurse into
+subdirectories of a skill root and some do not — so a nested layout would load
+unevenly. `experimental/` is a repo-side convention
 only; what lands in the skill roots is identical either way.
 
 To add a skill, create `config/agents/skills/experimental/<name>/SKILL.md` and

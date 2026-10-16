@@ -21,7 +21,7 @@ else
 fi
 
 # Order matters only for readability of the output.
-ALL_TOOLS="herdr pi omp claude codex grok amp cursor-agent gemini"
+ALL_TOOLS="herdr pi omp claude codex grok gemini"
 
 UPDATED=""
 SKIPPED=""
@@ -41,8 +41,6 @@ Known tools:
   claude        claude update, claude plugin marketplace update
   codex         brew upgrade --cask codex
   grok          grok update
-  amp           amp update
-  cursor-agent  cursor-agent update
   gemini        npm install -g @google/gemini-cli@latest (no self-updater)
 
 Options:
@@ -106,8 +104,6 @@ run_tool_update() {
     claude)       claude update && claude plugin marketplace update ;;
     codex)        update_codex ;;
     grok)         grok update ;;
-    amp)          amp update ;;
-    cursor-agent) cursor-agent update ;;
     gemini)       update_gemini ;;
     *)
       echo "${RED}Unknown tool: $1${RESET}" >&2

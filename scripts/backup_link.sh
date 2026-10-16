@@ -86,9 +86,9 @@ link_managed_path \
 # Codex and pi, ~/.claude/skills by Claude Code.
 #
 # Links are always flat, one directory per skill, even for skills grouped under
-# experimental/ in this repo. Discovery differs per tool — amp recurses into
-# subdirectories of ~/.claude/skills but ignores ~/.agents/skills entirely — so a
-# nested layout would load unevenly. The experimental/ grouping is a repo-side
+# experimental/ in this repo. Discovery differs per tool — some recurse into
+# subdirectories of a skill root and some do not — so a nested layout would load
+# unevenly. The experimental/ grouping is a repo-side
 # convention only; what lands in the skill roots looks identical either way.
 link_skill() {
   local skill_path=$1
