@@ -31,7 +31,6 @@ brew install starship
 brew install zsh-autosuggestions
 brew install zsh-syntax-highlighting
 brew install zsh-history-substring-search
-brew install fzf-tab
 
 # Install herdr with the official installer (the brew formula had issues); installs to ~/.local/bin
 echo "🐑 Installing herdr..."

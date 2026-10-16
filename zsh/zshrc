@@ -4,71 +4,6 @@
 
 # === Core Zsh Configuration === #
 
-# History settings
-HISTFILE=~/.zsh_history
-HISTSIZE=10000
-SAVEHIST=10000
-setopt appendhistory
-setopt hist_expire_dups_first
-setopt hist_ignore_dups
-setopt hist_ignore_space
-setopt hist_verify
-setopt share_history
-
-# Basic auto/tab completion with daily cache refresh
-autoload -Uz compinit
-if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
-  compinit
-else
-  compinit -C
-fi
-# Enhanced tab completion setup (Prezto-style)
-zstyle ':completion:*' completer _expand _complete _ignored _approximate
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-zstyle ':completion:*' menu select=2
-# Enhanced matcher list for substring matching like Prezto
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
-zstyle ':completion:*' special-dirs true # Complete . and .. special directories
-setopt AUTO_PARAM_SLASH # add slash when completing directories
-unsetopt COMPLETE_ALIASES # completes alias as the real command
-
-# Useful options
-setopt auto_cd
-setopt extended_glob
-setopt nomatch
-setopt notify
-setopt prompt_subst
-
-# === Plugins === #
-
-# fzf-tab (must be loaded after compinit but before other plugins)
-if [ -f /opt/homebrew/share/fzf-tab/fzf-tab.zsh ]; then
-  source /opt/homebrew/share/fzf-tab/fzf-tab.zsh
-elif [ -f /usr/local/share/fzf-tab/fzf-tab.zsh ]; then
-  source /usr/local/share/fzf-tab/fzf-tab.zsh
-elif [ -f "$HOME/.local/share/fzf-tab/fzf-tab.plugin.zsh" ]; then
-  # Git clone version uses .plugin.zsh
-  source "$HOME/.local/share/fzf-tab/fzf-tab.plugin.zsh"
-fi
-
-# zsh-autosuggestions
-if [ -f /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
-  source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-elif [ -f /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
-  source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-fi
-
-# zsh-history-substring-search
-if [ -f /usr/local/share/zsh-history-substring-search/zsh-history-substring-search.zsh ]; then
-  source /usr/local/share/zsh-history-substring-search/zsh-history-substring-search.zsh
-elif [ -f /opt/homebrew/share/zsh-history-substring-search/zsh-history-substring-search.zsh ]; then
-  source /opt/homebrew/share/zsh-history-substring-search/zsh-history-substring-search.zsh
-elif [ -f /usr/share/zsh-history-substring-search/zsh-history-substring-search.zsh ]; then
-  source /usr/share/zsh-history-substring-search/zsh-history-substring-search.zsh
-fi
-
-# === Alias Definitions === #
-
 # OS detection
 if [[ "$OSTYPE" == "darwin"* ]]; then
   export MACOS=true
@@ -76,8 +11,181 @@ else
   export MACOS=false
 fi
 
+# History settings
+HISTFILE=~/.zsh_history
+HISTSIZE=50000   # must exceed SAVEHIST for hist_expire_dups_first to work
+SAVEHIST=40000
+setopt appendhistory
+setopt hist_expire_dups_first
+setopt hist_ignore_dups
+setopt hist_ignore_space
+setopt hist_verify
+setopt share_history
+# Keep trivial commands out of history (they'd only add noise to Ctrl-R, Up,
+# the inline suggestion and the history-first completion group).
+HISTORY_IGNORE='(ls|ll|la|lt|lrt|cd|cd ..|..|pwd|exit|clear|gs|gws|history|d)'
+zshaddhistory() {
+  emulate -L zsh
+  setopt extendedglob
+  [[ ${1%%$'\n'} != ${~HISTORY_IGNORE} ]]
+}
+
+# === Completion function path === #
+# Everything that adds to fpath must run before the single compinit below.
+
+# Homebrew: sets PATH and FPATH (~/.zprofile normally does this already on macOS)
+if [[ "$MACOS" == true ]]; then
+  if [ -f "/opt/homebrew/bin/brew" ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [ -f "/usr/local/bin/brew" ]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
+fi
+
+# grok completions (its bin dir is in the path array further down)
+[[ -d "$HOME/.grok/completions/zsh" ]] && fpath=("$HOME/.grok/completions/zsh" $fpath)
+
+# Hand-written or generated completions tracked in this repo (e.g. _herdr).
+# (-/FN): follow symlinks, directories only, non-empty, no error if missing.
+fpath=(${${(%):-%N}:A:h}/completions(-/FN) $fpath)
+
+# Basic auto/tab completion with daily cache refresh
+zmodload zsh/complist
+autoload -Uz compinit
+if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
+  compinit
+else
+  compinit -C
+fi
+# === Tab completion === #
+# Native menu selection (fish-style): Tab lists matches below the prompt, Tab
+# again cycles through them, rewriting the word on the command line in place.
+# The cursor never leaves the command line; typing any character leaves the
+# menu and keeps editing. fzf is deliberately not involved in Tab.
+zstyle ':completion:*' menu select
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*:descriptions' format '%F{8}%d%f'
+zstyle ':completion:*' verbose yes
+zstyle ':completion:*' list-dirs-first true
+zstyle ':completion:*:cd:*' ignore-parents parent pwd  # cd ../<Tab> doesn't offer the dir you're in
+
+# kill <Tab>: process list; typing part of a command name resolves to its PID
+zstyle ':completion:*:*:*:*:processes' command 'ps -u $LOGNAME -o pid,user,command -w'
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;36=0=01'
+zstyle ':completion:*:*:kill:*' menu yes select
+zstyle ':completion:*:*:kill:*' force-list always
+zstyle ':completion:*:*:kill:*' insert-ids single
+zstyle ':completion:*:(rm|kill|diff):*' ignore-line other
+zstyle ':completion:*' file-sort modification # newest first, like `ll`
+zstyle ':completion:*' special-dirs true      # complete . and ..
+setopt AUTO_PARAM_SLASH                       # add slash when completing directories
+setopt COMPLETE_IN_WORD                       # complete from the cursor, using text on both sides
+setopt ALWAYS_TO_END                          # ...then move the cursor to the end of the match
+unsetopt COMPLETE_ALIASES                     # complete alias as the real command
+
+# History-aware completion: arguments previously used with the same command
+# are offered first (dimmed), followed by the normal completions.
+_history_args() {
+  (( CURRENT > 1 )) || return 1
+  # Aliases are expanded before completion (COMPLETE_ALIASES is unset), so
+  # match history on the command as typed (e.g. `ls`) and as expanded (`eza`).
+  local cmd=$words[1] typed=${${(z)LBUFFER}[1]}
+  [[ -n $cmd ]] || return 1
+  # If the word is exactly an existing directory, let file completion win this
+  # Tab so it adds the slash (`cd ..` -> `cd ../`); history returns on the next Tab.
+  [[ -n $PREFIX && $PREFIX != */ && -d ${PREFIX/#\~/$HOME} ]] && return 1
+  typed=${typed:-$cmd}
+  local -a args
+  local key word expanded
+  local cdlike=0
+  [[ $typed == (cd|pushd) || $cmd == (cd|pushd) ]] && cdlike=1
+  # (b) quotes pattern characters so a typed `[` or `*` can't break matching
+  for key in ${(Onk)history[(R)(${(b)typed}|${(b)cmd}) *]}; do   # newest first
+    for word in ${(z)history[$key]}; do
+      [[ $word == ('&&'|'||'|';'|'|') ]] && break                   # stop at the next command
+      [[ $word == (${(b)typed}|${(b)cmd}) ]] && continue
+      [[ -z $PREFIX || $word == (#i)*${(b)PREFIX}* ]] || continue
+      # Relative paths recorded in another directory are meaningless here, and
+      # directories get a trailing slash like file completion (`..` -> `../`).
+      expanded=${word/#\~/$HOME}
+      if (( cdlike )); then
+        [[ -d $expanded ]] || continue                # cd args must be dirs from *here*
+        [[ ${expanded:A} == ${PWD:A} ]] && continue   # like ignore-parents
+        [[ $word != */ ]] && word+=/
+      elif [[ $word == (-*|*://*) ]]; then
+        :                                             # flags and URLs pass through
+      elif [[ $word == */* ]]; then
+        [[ -e $expanded ]] || continue                # path-like: must exist from here
+        [[ -z $PREFIX || $PREFIX == */ ]] || continue # mid-segment: let files finish it
+        [[ -d $expanded && $word != */ ]] && word+=/
+      elif [[ -d $expanded ]]; then
+        continue  # plain word naming a real dir: file completion offers it better
+      fi
+      args+=($word)
+    done
+    (( $#args >= 60 )) && break
+  done
+  args=(${(u)args})
+  (( $#args )) || return 1
+  _wanted history-words expl 'history' compadd -Q -a args
+}
+_history_then_complete() {
+  _history_args
+  _complete
+  # Some completion functions (e.g. git's) return non-zero even after adding
+  # matches; judge by the match count so _approximate only runs when nothing matched.
+  (( compstate[nmatches] > 0 ))
+}
+zstyle ':completion:*' completer _expand _history_then_complete _ignored _approximate
+zstyle ':completion:*' group-order history-words
+zstyle ':completion:*:history-words' list-colors '=*=2'   # dim, like the inline suggestion
+
+# Substring matching (case-insensitive, partial words, substrings)
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+
+# Colours for files/dirs in the list. LS_COLORS is empty on macOS, so fall back
+# to a small built-in palette; kept out of the environment so eza is unaffected.
+_comp_colors=${LS_COLORS:-'di=1;34:ln=36:ex=32:so=35:pi=33:bd=1;33:cd=1;33:or=31:mi=31'}
+zstyle ':completion:*' list-colors ${(s.:.)_comp_colors} 'ma=7'
+unset _comp_colors
+
+# Useful options
+setopt auto_cd
+setopt extended_glob
+setopt nomatch
+setopt interactive_comments # allow '# comment' on the command line
+setopt rc_quotes            # 'it''s' instead of 'it'\''s'
+setopt no_rm_star_silent    # confirm before `rm *` (zsh's default, made explicit)
+setopt notify
+setopt prompt_subst
+
+# === Plugins === #
+
+# Inside the completion menu, Shift-Tab steps backwards
+bindkey -M menuselect '^[[Z' reverse-menu-complete
+
+# Source a zsh plugin by name: Homebrew (wherever it lives), then distro paths.
+source_plugin() {
+  local f
+  for f in ${HOMEBREW_PREFIX:+$HOMEBREW_PREFIX/share/$1/$1.zsh} \
+           /usr/share/$1/$1.zsh /usr/share/zsh/plugins/$1/$1.zsh; do
+    [[ -r $f ]] && { source "$f"; return 0 }
+  done
+  return 1
+}
+
+# zsh-autosuggestions: inline grey text from history first, then completions
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+ZSH_AUTOSUGGEST_HISTORY_IGNORE='?(#c120,)'   # never suggest lines over 120 chars
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=40           # stop suggesting once the line is long
+source_plugin zsh-autosuggestions
+
+# zsh-history-substring-search
+source_plugin zsh-history-substring-search
+
+# === Alias Definitions === #
+
 # Common aliases
-alias gla='git log --pretty=oneline --abbrev-commit'
 alias vim='nvim'
 
 # Modern replacements
@@ -139,17 +247,26 @@ fi
 
 # === Path Configuration === #
 
-# Add local bin directories to PATH
-export PATH="$HOME/.local/bin:$PATH"
-
-# Homebrew
+# pnpm home (used by pnpm itself and in the path array below)
 if [[ "$MACOS" == true ]]; then
-  if [ -f "/opt/homebrew/bin/brew" ]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  elif [ -f "/usr/local/bin/brew" ]; then
-    eval "$(/usr/local/bin/brew shellenv)"
-  fi
+  export PNPM_HOME="$HOME/Library/pnpm"
+else
+  export PNPM_HOME="$HOME/.local/share/pnpm"
 fi
+
+# PATH as a unique array: the first occurrence wins, and (N) drops directories
+# that don't exist on this machine. Homebrew, conda and nvm prepend later.
+typeset -gU path fpath cdpath
+path=(
+  $HOME/.local/bin(N)
+  /opt/homebrew/share/google-cloud-sdk/bin(N)
+  $HOME/.cargo/bin(N)
+  $HOME/.yarn/bin(N) $HOME/.config/yarn/global/node_modules/.bin(N)
+  ${PNPM_HOME}(N)
+  $HOME/.grok/bin(N)
+  $path
+  $HOME/.lmstudio/bin(N)
+)
 
 # Google Cloud SDK path - OS specific
 if [[ "$MACOS" == true ]]; then
@@ -174,14 +291,15 @@ else
   fi
 fi
 
-# FZF
+# FZF: draw below the cursor instead of taking over the screen
+export FZF_DEFAULT_OPTS='--height 40% --layout reverse --border top'
+if [[ "$MACOS" == true ]]; then
+  export FZF_CTRL_R_OPTS="--bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort' --header 'CTRL-Y copies the command'"
+fi
+export FZF_CTRL_T_OPTS="--walker-skip .git,node_modules,target --preview 'bat -n --color=always {}'"
+export FZF_ALT_C_OPTS="--walker-skip .git,node_modules,target --preview 'eza -T --level=2 --color=always {}'"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-# Yarn bin path
-export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
-
-# Cargo bin path (for Rust packages like eza)
-[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
+bindkey '^I' expand-or-complete   # fzf keeps Ctrl-R/Ctrl-T/Alt-C; Tab never invokes fzf
 
 # Conda initialize - OS specific
 if [[ "$MACOS" == true ]]; then
@@ -219,8 +337,28 @@ fi
 # === Keybindings === #
 bindkey -e  # Use emacs key bindings
 
+# Alt-Backspace deletes back to the previous / instead of the whole path
+slash-backward-kill-word() { local WORDCHARS="${WORDCHARS:s@/@}"; zle backward-kill-word }
+zle -N slash-backward-kill-word
+bindkey '^[^?' slash-backward-kill-word
+bindkey '^[^H' slash-backward-kill-word
+
+# Ctrl-Z on an empty line resumes the last suspended job; on a non-empty line it
+# stashes what you typed and gives it back at the next prompt
+fancy-ctrl-z() {
+  if [[ $#BUFFER -eq 0 ]]; then
+    BUFFER="fg"
+    zle accept-line -w
+  else
+    zle push-input -w
+    zle clear-screen -w
+  fi
+}
+zle -N fancy-ctrl-z
+bindkey '^Z' fancy-ctrl-z
+
 # Bind up/down arrows to history substring search if available, otherwise use default
-if [[ -n "$HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND" ]]; then
+if (( $+widgets[history-substring-search-up] )); then
   bindkey '^[[A' history-substring-search-up     # Up arrow
   bindkey '^[[B' history-substring-search-down   # Down arrow
   bindkey '^P' history-substring-search-up       # Ctrl+P
@@ -248,8 +386,8 @@ else
 fi
 
 # Add additional functions
-# fd - Find directories
-fd() {
+# fcd - fuzzy-find a directory and cd into it (named fcd so it doesn't shadow fd-find)
+fcd() {
   local dir
   dir=$(find ${1:-.} -path '*/\.*' -prune -o -type d -print 2> /dev/null | fzf +m) && cd "$dir"
 }
@@ -374,50 +512,21 @@ if [ -s "$NVM_DIR/nvm.sh" ]; then
     fi
 
     if [ -n "$_nvm_bin" ]; then
-      case ":$PATH:" in
-        *":$_nvm_bin:"*) ;;
-        *) export PATH="$_nvm_bin:$PATH" ;;
-      esac
+      path=($_nvm_bin $path)
     fi
     unset _nvm_bin _nvm_bins _nvm_version
   fi
   unset _nvm_default
 fi
 
-# pnpm
-if [[ "$MACOS" == true ]]; then
-  export PNPM_HOME="$HOME/Library/pnpm"
-else
-  export PNPM_HOME="$HOME/.local/share/pnpm"
-fi
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
 
-# >>> grok installer >>>
-case ":$PATH:" in
-  *":$HOME/.grok/bin:"*) ;;
-  *) export PATH="$HOME/.grok/bin:$PATH" ;;
-esac
-_grok_completion_dir="$HOME/.grok/completions/zsh"
-if [ -d "$_grok_completion_dir" ] && (( ! ${fpath[(Ie)$_grok_completion_dir]} )); then
-  fpath=("$_grok_completion_dir" $fpath)
-  autoload -Uz compinit && compinit -C
+# === Navigation === #
+# zoxide: frecency-ranked cd. `z foo` jumps, never draws UI; `zi foo` picks via fzf (kept inline).
+if (( $+commands[zoxide] )); then
+  export _ZO_EXCLUDE_DIRS="$HOME:$HOME/.cache/*:/tmp/*"
+  export _ZO_FZF_OPTS="--height 40% --layout reverse --border top"
+  eval "$(zoxide init zsh)"   # must come after compinit
 fi
-unset _grok_completion_dir
-# <<< grok installer <<<
-
-# Added by LM Studio CLI (lms)
-case ":$PATH:" in
-  *":$HOME/.lmstudio/bin:"*) ;;
-  *) export PATH="$PATH:$HOME/.lmstudio/bin" ;;
-esac
-# End of LM Studio CLI section
 
 # zsh-syntax-highlighting must be sourced after every widget and completion.
-if [ -f /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
-  source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-elif [ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
-  source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-fi
+source_plugin zsh-syntax-highlighting

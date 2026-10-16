@@ -32,7 +32,6 @@ A clean, cross-platform dotfiles setup for macOS and Linux with modern tools.
   - `bat` - A better `cat` with syntax highlighting
   - `eza` - A modern replacement for `ls`
   - `fzf` - Fuzzy finder for your shell
-  - `fzf-tab` - Fuzzy completion for tab (type partial matches and select with fzf)
   - `ripgrep` - Fast code searching
 
 ## 🚀 Installation
