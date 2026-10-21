@@ -51,10 +51,7 @@ unlink_and_restore() {
   fi
 }
 
-unlink_and_restore "$DOTFILES_DIR/vim" "$HOME/.vim" "vim" ".vim"
 unlink_and_restore "$DOTFILES_DIR/vimrc" "$HOME/.vimrc" "vimrc" ".vimrc"
-unlink_and_restore "$DOTFILES_DIR/bashrc" "$HOME/.bashrc" "bashrc" ".bashrc"
-unlink_and_restore "$DOTFILES_DIR/bash_profile" "$HOME/.bash_profile" "bash_profile" ".bash_profile"
 unlink_and_restore "$DOTFILES_DIR/gitconfig" "$HOME/.gitconfig" "gitconfig" ".gitconfig"
 unlink_and_restore "$DOTFILES_DIR/zsh/zshrc" "$HOME/.zshrc" "zshrc" ".zshrc"
 unlink_and_restore "$DOTFILES_DIR/tmux.conf" "$HOME/.tmux.conf" "tmux.conf" ".tmux.conf"

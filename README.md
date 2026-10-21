@@ -27,7 +27,6 @@ A clean, cross-platform dotfiles setup for macOS and Linux with modern tools.
   - Tmux for session management with Atom One Dark theme
   - Herdr on macOS for agent-aware workspaces, tabs, and panes
 - **Agent skills**: `bro` rewrites the previous response in plain language
-- **Git**: Optimized Git configuration with helpful aliases
 - **Modern Utilities**:
   - `bat` - A better `cat` with syntax highlighting
   - `eza` - A modern replacement for `ls`
@@ -96,7 +95,7 @@ dotfiles/
 ├── scripts/              # Installation and utility scripts
 ├── zsh/                  # Zsh-specific files
 │   └── zshrc             # Main Zsh configuration
-├── vim/                  # Vim configuration and plugins
+├── vimrc                 # Vim config, also sourced by Neovim for shared settings
 ├── tmux.conf             # Tmux configuration with Atom One theme
 ├── install_mac.sh        # macOS installation script
 ├── install_linux.sh      # Linux installation script
