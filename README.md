@@ -14,7 +14,7 @@ A clean, cross-platform dotfiles setup for macOS and Linux with modern tools.
 ## 🛠 What's Included
 
 - **Shell**: Zsh with [Starship](https://starship.rs/) prompt
-- **Terminal**: Support for any modern terminal with true color support
+- **Terminal**: [Ghostty](https://ghostty.org/) config (any true-color terminal works)
 - **Text Editors**:
   - Neovim with modern plugins and native LSP for development
   - Full Lua configuration with lazy.nvim for plugin management
@@ -91,6 +91,7 @@ dotfiles/
 │   │   └── lua/user/     # Modular Lua configurations
 │   ├── agents/skills/    # Cross-agent skills
 │   │   └── experimental/ # Skills still being trialled
+│   ├── ghostty/          # Ghostty terminal settings
 │   ├── herdr/            # Herdr keybindings and settings
 │   └── starship/         # Starship prompt configuration
 ├── scripts/              # Installation and utility scripts

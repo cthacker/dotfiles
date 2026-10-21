@@ -84,6 +84,11 @@ unlink_and_restore \
   "$HOME/.config/herdr/config.toml" \
   "config/herdr/config.toml"
 
+unlink_and_restore \
+  "$DOTFILES_DIR/config/ghostty/config" \
+  "$HOME/.config/ghostty/config" \
+  "config/ghostty/config"
+
 # Mirror of link_skill in backup_link.sh: skills are linked flat into both skill
 # roots regardless of whether they sit at the top level or under experimental/.
 unlink_skill() {

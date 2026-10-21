@@ -1,0 +1,27 @@
+# Ghostty terminal config, linked to ~/.config/ghostty/config by backup_link.sh.
+# Defaults are sensible; only overrides live here. See `ghostty +show-config --default --docs`.
+
+keybind = shift+arrow_left=previous_tab
+keybind = shift+arrow_right=next_tab
+keybind = ctrl+shift+arrow_left=move_tab:-1
+keybind = ctrl+shift+arrow_right=move_tab:1
+
+# Auto-update settings for pre-release builds (includes memory leak fix)
+auto-update = check
+auto-update-channel = tip
+
+# Window padding
+window-padding-x = 4
+window-padding-y = 4
+
+# Make the Option key act as Alt/Meta so terminal apps (Neovim) receive <A-...>.
+# Use `left` instead of `true` if you want the right Option key to keep typing
+# accented characters.
+macos-option-as-alt = true
+
+# Command+h/l = start/end of line. macOS never sends Cmd to terminal programs,
+# so we translate them into the Home (\x1b[H) and End (\x1b[F) key sequences.
+# Neovim moves to line start/end on these in insert AND normal mode, and the
+# shell honors them too. Note: this overrides Cmd+H "Hide" inside Ghostty.
+keybind = cmd+h=text:\x1b[H
+keybind = cmd+l=text:\x1b[F

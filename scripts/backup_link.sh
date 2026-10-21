@@ -82,6 +82,11 @@ link_managed_path \
   "$HOME/.config/herdr/config.toml" \
   "config/herdr/config.toml"
 
+link_managed_path \
+  "$DOTFILES_DIR/config/ghostty/config" \
+  "$HOME/.config/ghostty/config" \
+  "config/ghostty/config"
+
 # Link one skill directory into both skill roots: ~/.agents/skills is read by
 # Codex and pi, ~/.claude/skills by Claude Code.
 #
