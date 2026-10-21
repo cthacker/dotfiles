@@ -57,10 +57,6 @@ return {
         theme = "onedark",
         component_separators = { left = "", right = "" },
         section_separators = { left = "", right = "" },
-        disabled_filetypes = {
-          statusline = { "dashboard", "alpha", "starter" },
-          winbar = { "dashboard", "alpha", "starter" },
-        },
         ignore_focus = {},
         always_divide_middle = true,
         globalstatus = true,
@@ -91,7 +87,7 @@ return {
       tabline = {},
       winbar = {},
       inactive_winbar = {},
-      extensions = { "nvim-tree", "toggleterm", "fugitive" },
+      extensions = { "nvim-tree" },
     })
   end,
 }

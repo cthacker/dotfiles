@@ -1,73 +1,43 @@
--- General Neovim options and settings
+-- Neovim-only options. Shared settings (search, numbers, mouse, colors, cmdheight,
+-- scrolloff, per-filetype indentation, ...) live in vimrc, which init.lua sources
+-- first; only set something here when it doesn't apply to Vim or must differ.
 
 local opt = vim.opt
-local g = vim.g
 
--- Leader key
---g.mapleader = " "
---g.maplocalleader = " "
-
--- Line numbers
---opt.number = true
---opt.relativenumber = true
-
--- Tabs & Indentation
+-- Tabs & Indentation (vimrc leaves Vim on its defaults)
 opt.tabstop = 2
 opt.shiftwidth = 2
 opt.softtabstop = 2
 opt.expandtab = true
 opt.smartindent = true
-opt.autoindent = true
 opt.wrap = false
 
--- Search settings
-opt.ignorecase = true
+-- Search
 opt.smartcase = true
-opt.hlsearch = true
-opt.incsearch = true
 
 -- Appearance
-opt.termguicolors = true
-opt.background = "dark"
 opt.signcolumn = "yes"
-opt.cmdheight = 1
-opt.scrolloff = 10
 opt.completeopt = "menuone,noselect"
+opt.showmode = false -- lualine already shows the mode
 
 -- Behavior
-opt.hidden = true
-opt.errorbells = false
-opt.swapfile = false
-opt.backup = false
--- opt.undofile = true
--- opt.undodir = vim.fn.expand("~/.vim/undodir")
-opt.backspace = "indent,eol,start"
 opt.splitright = true
 opt.splitbelow = true
-opt.autochdir = false
-opt.mouse = "a"
 opt.clipboard = "unnamedplus"
-opt.modifiable = true
-opt.encoding = "UTF-8"
-opt.showmode = false
 
 -- Decrease update time
 opt.updatetime = 250
 opt.timeoutlen = 300
 
--- File type specific indentation
-vim.cmd([[
-  augroup FileTypeSpecificIndentation
-    autocmd!
-    autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4
-    autocmd FileType cpp,c,h,hpp setlocal tabstop=4 shiftwidth=4 softtabstop=4
-  augroup END
-]])
+-- No remote-plugin hosts: nothing here uses Python/Node/Ruby/Perl plugins, and
+-- LSP servers are installed and run by mason, not through these providers.
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_node_provider = 0
+vim.g.loaded_ruby_provider = 0
+vim.g.loaded_perl_provider = 0
 
 -- Remove trailing whitespace on save
-vim.cmd([[
-  augroup TrimWhitespace
-    autocmd!
-    autocmd BufWritePre * :%s/\s\+$//e
-  augroup END
-]])
+vim.api.nvim_create_autocmd("BufWritePre", {
+  group = vim.api.nvim_create_augroup("TrimWhitespace", { clear = true }),
+  command = [[%s/\s\+$//e]],
+})

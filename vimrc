@@ -47,9 +47,8 @@ filetype plugin indent on
 " Python stuff
 au BufNewFile,BufRead *.py setlocal tabstop=4 shiftwidth=4 softtabstop=4
 
-" C++ stuff
-au BufNewFile,BufRead *.cpp setlocal tabstop=4 shiftwidth=4 softtabstop=4
-au BufNewFile,BufRead *.hpp setlocal tabstop=4 shiftwidth=4 softtabstop=4
+" C/C++ stuff
+au BufNewFile,BufRead *.c,*.h,*.cpp,*.hpp setlocal tabstop=4 shiftwidth=4 softtabstop=4
 
 " Javascript stuff
 au BufNewFile,BufRead *.ejs,*.hbs setlocal filetype=html
@@ -140,9 +139,19 @@ set noswapfile
 
 " Lets Vim know that it can use 256 colors
 set t_Co=256
+" Vim only emits true color for xterm-like TERMs; spell the codes out so it also
+" works under tmux (TERM=tmux-256color). Neovim handles this itself.
+if !has('nvim')
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+endif
 set termguicolors
 set background=dark
-" Use onedark colorscheme (matching Neovim) if available, fallback to molokai
+" Use onedark colorscheme (matching Neovim) if available, fallback to molokai.
+" molokai ships in the Neovim config's colors/ dir, so put that on Vim's path too.
+if !has('nvim')
+  set runtimepath+=~/.config/nvim
+endif
 try
   colorscheme onedark
 catch /^Vim\%((\a\+)\)\=:E185/

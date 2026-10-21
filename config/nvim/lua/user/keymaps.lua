@@ -5,15 +5,9 @@ local keymap = vim.keymap.set
 local opts = { noremap = true, silent = true }
 
 keymap("", "<Space>", "<Nop>", opts)
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
 
 -- Normal mode mappings --
--- Better window navigation
-keymap("n", "<C-h>", "<C-w>h", opts)
-keymap("n", "<C-j>", "<C-w>j", opts)
-keymap("n", "<C-k>", "<C-w>k", opts)
-keymap("n", "<C-l>", "<C-w>l", opts)
+-- Window navigation, <leader>/, ii, and <leader>y/d/x/p/P live in vimrc.
 
 -- Nvim-tree file explorer
 keymap("n", "<leader>nn", ":NvimTreeToggle<CR>", opts)
@@ -37,13 +31,7 @@ keymap("n", "<leader>bc", ":bdelete<CR>", opts)
 keymap("n", "<A-j>", ":m .+1<CR>==", opts)
 keymap("n", "<A-k>", ":m .-2<CR>==", opts)
 
--- Turn off search highlighting
-keymap("n", "<leader>/", ":nohlsearch<CR>", opts)
-
 -- Insert mode mappings --
--- Quick escape from insert mode
-keymap("i", "ii", "<ESC>", opts)
-
 -- macOS-style motion without leaving insert mode
 -- Option+h/l = move by word (needs `macos-option-as-alt` in ghostty config)
 keymap("i", "<A-h>", "<C-o>b", opts)  -- word left
@@ -63,17 +51,11 @@ keymap("v", "<A-k>", ":m '<-2<CR>gv=gv", opts)
 -- Don't overwrite register when pasting over selection
 keymap("v", "p", '"_dP', opts)
 
--- Clipboard operations
-keymap("v", "<leader>y", '"+y', opts)
-keymap("v", "<leader>Y", '"+Y', opts)
-keymap("n", "<leader>y", '"+y', opts)
-keymap("n", "<leader>Y", '"+Y', opts)
-keymap("n", "<leader>p", '"+p', opts)
-keymap("n", "<leader>P", '"+P', opts)
+-- Clipboard: Y variants (y/p/P are in vimrc)
+keymap({ "n", "v" }, "<leader>Y", '"+Y', opts)
 
 -- Markdown preview
 keymap("n", "<leader>mp", ":MarkdownPreviewToggle<CR>", opts)
-
 
 -- Terminal mode mappings --
 -- Better terminal navigation
