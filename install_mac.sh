@@ -27,6 +27,7 @@ brew install fzf
 brew install bat
 brew install eza
 brew install jq
+brew install zoxide
 brew install starship
 brew install zsh-autosuggestions
 brew install zsh-syntax-highlighting
@@ -54,14 +55,6 @@ install_nerd_font() {
 
 # Install popular programming fonts with ligatures
 install_nerd_font "FiraCode"
-
-# Install Python packages
-echo "🐍 Installing Python packages..."
-pip3 install --user pynvim
-
-# Install Node packages
-echo "📦 Installing Node packages..."
-npm install -g neovim
 
 # Backup and link dotfiles
 echo "🔄 Backing up and linking dotfiles..."

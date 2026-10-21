@@ -31,6 +31,7 @@ A clean, cross-platform dotfiles setup for macOS and Linux with modern tools.
   - `bat` - A better `cat` with syntax highlighting
   - `eza` - A modern replacement for `ls`
   - `fzf` - Fuzzy finder for your shell
+  - `zoxide` - A smarter `cd` that learns your most-used directories
   - `ripgrep` - Fast code searching
 
 ## 🚀 Installation

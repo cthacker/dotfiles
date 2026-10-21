@@ -84,10 +84,11 @@ if [ -f /etc/debian_version ]; then
 
     # Install dependencies
     echo "📦 Installing essential packages..."
-    sudo apt install -y neovim ripgrep tmux nodejs npm python3-pip curl wget git zsh unzip zsh-history-substring-search build-essential
+    sudo apt install -y neovim ripgrep tmux nodejs npm python3-venv curl wget git zsh unzip build-essential \
+        zsh-autosuggestions zsh-syntax-highlighting zsh-history-substring-search
 
     # Install additional packages
-    sudo apt install -y bat fzf
+    sudo apt install -y bat fzf zoxide
 
     # On Debian/Ubuntu, bat is installed as batcat - create symlink
     if command -v batcat &> /dev/null && ! command -v bat &> /dev/null; then
@@ -124,7 +125,8 @@ elif [ -f /etc/fedora-release ]; then
 
     # Install dependencies
     echo "📦 Installing essential packages..."
-    sudo dnf install -y neovim ripgrep tmux nodejs npm python3-pip curl wget git zsh bat fzf unzip gcc gcc-c++ make
+    sudo dnf install -y neovim ripgrep tmux nodejs npm python3-pip curl wget git zsh bat fzf unzip gcc gcc-c++ make \
+        zoxide zsh-autosuggestions zsh-syntax-highlighting
 
     # Install Eza
     if ! command -v eza &> /dev/null; then
@@ -151,7 +153,8 @@ elif [ -f /etc/arch-release ]; then
 
     # Install dependencies
     echo "📦 Installing essential packages..."
-    sudo pacman -S --noconfirm neovim ripgrep tmux nodejs npm python-pip curl wget git zsh bat fzf unzip base-devel
+    sudo pacman -S --noconfirm neovim ripgrep tmux nodejs npm python-pip curl wget git zsh bat fzf unzip base-devel \
+        zoxide zsh-autosuggestions zsh-syntax-highlighting zsh-history-substring-search
 
     # Try to install eza
     if ! sudo pacman -S --noconfirm eza 2>/dev/null; then
@@ -168,14 +171,6 @@ fi
 
 ensure_neovim_012
 ensure_tree_sitter_cli
-
-# Install Python packages
-echo "🐍 Installing Python packages..."
-pip3 install --user pynvim
-
-# Install Node packages
-echo "📦 Installing Node packages..."
-sudo npm install -g neovim
 
 # Install fonts - direct download method
 echo "🔤 Installing fonts with ligature support..."
