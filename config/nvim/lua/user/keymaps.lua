@@ -58,9 +58,5 @@ keymap({ "n", "v" }, "<leader>Y", '"+Y', opts)
 keymap("n", "<leader>mp", ":MarkdownPreviewToggle<CR>", opts)
 
 -- Terminal mode mappings --
--- Better terminal navigation
-keymap("t", "<C-h>", "<C-\\><C-N><C-w>h", opts)
-keymap("t", "<C-j>", "<C-\\><C-N><C-w>j", opts)
-keymap("t", "<C-k>", "<C-\\><C-N><C-w>k", opts)
-keymap("t", "<C-l>", "<C-\\><C-N><C-w>l", opts)
+-- Ctrl+h/j/k/l navigation (normal and terminal mode) lives in user/navigate.lua
 keymap("t", "<Esc>", "<C-\\><C-n>", opts)
