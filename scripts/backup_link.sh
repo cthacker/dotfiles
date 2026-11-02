@@ -87,6 +87,11 @@ link_managed_path \
   "$HOME/.config/ghostty/config" \
   "config/ghostty/config"
 
+link_managed_path \
+  "$DOTFILES_DIR/config/rex/init.lua" \
+  "$HOME/.config/rex/init.lua" \
+  "config/rex/init.lua"
+
 # Link one skill directory into both skill roots: ~/.agents/skills is read by
 # Codex and pi, ~/.claude/skills by Claude Code.
 #

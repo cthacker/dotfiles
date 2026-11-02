@@ -89,6 +89,11 @@ unlink_and_restore \
   "$HOME/.config/ghostty/config" \
   "config/ghostty/config"
 
+unlink_and_restore \
+  "$DOTFILES_DIR/config/rex/init.lua" \
+  "$HOME/.config/rex/init.lua" \
+  "config/rex/init.lua"
+
 # Mirror of link_skill in backup_link.sh: skills are linked flat into both skill
 # roots regardless of whether they sit at the top level or under experimental/.
 unlink_skill() {

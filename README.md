@@ -93,6 +93,7 @@ dotfiles/
 │   │   └── experimental/ # Skills still being trialled
 │   ├── ghostty/          # Ghostty terminal settings
 │   ├── herdr/            # Herdr keybindings and settings
+│   ├── rex/              # Rex keybindings (init.lua)
 │   └── starship/         # Starship prompt configuration
 ├── scripts/              # Installation and utility scripts
 ├── zsh/                  # Zsh-specific files
@@ -178,6 +179,7 @@ The configuration uses Atom One Dark theme across all tools for a consistent exp
 - **Neovim**: Edit `config/nvim/lua/plugins/onedark.lua`
 - **Tmux**: Modify color variables in `tmux.conf`
 - **Herdr**: Modify keybindings in `config/herdr/config.toml`
+- **Rex**: Modify keybindings in `config/rex/init.lua`, then run `rex config reload`
 - **Starship**: Change themes with `./scripts/switch_starship_theme.sh`
 
 ## 🤝 Contributing
