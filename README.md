@@ -93,6 +93,7 @@ dotfiles/
 │   │   └── experimental/ # Skills still being trialled
 │   ├── ghostty/          # Ghostty terminal settings
 │   ├── herdr/            # Herdr keybindings and settings
+│   ├── pi/extensions/    # Pi extensions (rex-glow: Markdown links open in a Rex pane)
 │   ├── rex/              # Rex keybindings (init.lua)
 │   └── starship/         # Starship prompt configuration
 ├── scripts/              # Installation and utility scripts
