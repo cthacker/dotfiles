@@ -1,67 +1,117 @@
 ---
 name: arena
-description: Spawn N parallel candidates at the same task, pick a base, graft the strongest parts of the losers into it.
+description: >-
+  Use Rex to run independent native-agent candidates, cross-judge their artifacts, choose a
+  base, incorporate useful alternatives, and verify the result.
 disable-model-invocation: true
 ---
 
 # Arena
 
-Fan out N parallel attempts at the same task. Read every candidate end to end. Pick the strongest as the base. Graft the best ideas from the others into it. Verify the synthesized result.
+Run independent attempts at the same task. Read each artifact, choose a base, graft useful ideas,
+and verify one final result. The parent owns the decision and verification.
 
-## Start
+Track Frame, Fan out, Cross-judge, Pick, Graft, and Verify with a short checklist.
 
-Open a todo list with one entry per phase before launching anything. The arena runs autonomously and the list keeps phases from silently disappearing.
+## Default roster
 
-1. Frame
-2. Fan out
-3. Cross-judge
-4. Pick
-5. Graft
-6. Verify
+Use two candidates and one judge:
+
+| Role | Native CLI | Model | Effort |
+| --- | --- | --- | --- |
+| Candidate A | `claude` | `claude-opus-5-5` | `high` |
+| Candidate B | `codex` | `gpt-6.1-sol` | `xhigh` |
+| Judge for a GPT parent | `claude` | `claude-opus-5-5` | `xhigh` |
+| Judge for a Claude parent | `codex` | `gpt-6-astra` | `xhigh` |
+
+Choose the judge by the parent's actual model family, not its CLI or hosting provider. Other
+parent families use Astra xhigh. Resolve an unknown parent family before choosing the judge.
+The judge must be from a different family than the parent; if unavailable, report absent judging
+rather than silently using the parent's family. With these two families, it still shares a family
+with one candidate. Disclose that overlap in the synthesis note.
+
+Use this table, not external model-role configuration, for defaults. Explicit user requests for
+models, count, or effort take precedence. Extra candidates may use other models or independent
+repeats at different effort levels. Set each runner's model and effort explicitly.
+
+## Execution
+
+Rex owns worker startup, status, waiting, inspection, and cleanup. Workers use native Claude Code
+or Codex CLI sessions, regardless of the parent's harness. Read [runners](./references/runners.md)
+before launching. Use a separate, unselected Rex session so workers do not steal focus.
+If Rex is unavailable, announce a direct-subprocess fallback using the same native commands.
 
 ## Phase A: Frame
 
-The N candidates will receive the same prompt, so the prompt is the contract. Get it right before spawning anything.
-
-1. State the artifact each candidate is producing.
-2. Derive the rubric. State what success looks like for *this* task, then turn it into 3-6 concrete gradeable criteria. Concrete: `Adds a --dry-run flag that skips writes`. Vague: `code is correct`. The rubric is the picker's tool in Phase D; candidates only see the task.
-3. Pick the runners. Prefer **model diversity**: give each candidate a different model using whatever your harness provides (in Claude Code, the subagent `model` parameter; in pi, different provider/model configs; an external CLI like `codex exec` in read-only mode also counts as a runner). Different models have different blind spots, and that diversity is the signal. Spawn more runners when the arena covers multiple design directions. Same model N times is fine when the work is generation-bound rather than judgment-sensitive, or when your harness can't vary models.
-4. Assign output paths. Each candidate writes to its own location (a git worktree where possible, otherwise `/tmp/arena-<slug>/candidate-<n>/`). N candidates writing to the same path is shared mutable state and will corrupt the comparison.
+1. State the artifact, goal, constraints, and scope.
+2. Define 3-6 concrete criteria, separating required behavior from preferences. Give candidates
+   all requirements and acceptance criteria; keep comparative scoring with the parent and judge.
+3. Select the roster, permissions, and time limit. If a model or effort is unavailable, report it
+   and any substitution; never silently change the roster.
+4. Give candidates the same brief, relevant repository instructions, and source snapshot, including
+   relevant uncommitted work. Use separate worktrees or output directories and isolate mutable
+   test data or services. Candidates write only in assigned locations, not the parent workspace
+   or shared brief. Their briefs forbid further delegation or nested arenas.
 
 ## Phase B: Fan out
 
-Spawn all candidates in a single message so they run concurrently. Each gets the identical prompt from Phase A plus its own output path. Candidates run independently; they never see each other's work.
+Start candidates concurrently through Rex in fresh native CLI sessions. Each receives the same
+task and grounding plus its own output path. Request the artifact, a short rationale with rejected
+alternatives, and checks actually run with results and limitations. Candidates never see each
+other's work.
+
+Execution failures and missing artifacts are dropouts, not low scores. Check that outputs exist.
+Retry only an affected worker, at most once for a plausible transient failure within the user's
+limits. Wait until every writer has finished or been stopped before judging or synthesizing.
+
+With two or more usable artifacts, compare the survivors. With one, verify it and disclose that
+no comparison completed. With none, report the failures and stop. Do not simulate independent
+candidates in the parent context when separate runs are unavailable.
 
 ## Phase C: Cross-judge
 
-After all Phase B candidates complete, spawn one read-only judge on a **different model** from the one you (the parent) are running as. It sees the rubric and the candidates by path label, scores each criterion, and recommends a base with rationale. It runs in parallel with your own reading in Phase D, not with the candidates themselves. Spawning while candidates are still writing means the judge sees partial or empty outputs and reports them as dropouts.
+Run the parent-relative judge through Rex in a fresh, read-only context at xhigh effort. Give it
+only the task, rubric, and artifacts under neutral labels, without model identities, effort levels,
+worker logs, or the parent's preferred solution. Ask for findings against each criterion with
+artifact evidence, then a recommended base and its tradeoffs.
+
+The judge may run alongside the parent's reading, never alongside unfinished candidate writes.
+If no judge can run, disclose that the parent judged alone. With one surviving candidate, use
+the judge as an independent reviewer, not a comparative judge.
 
 ## Phase D: Pick a base
 
-Read every candidate end to end before picking. Skimming N candidates surfaces only the candidate whose surface looks most familiar.
+Read every artifact end to end. For code, read each complete changed diff and the context needed
+to assess it. Compare candidates criterion by criterion: required behavior first, then preferences.
+Prefer the base a maintainer can extend without breaking invariants; use simplicity as a tiebreaker.
+A candidate that still violates requirements is a starting point for repair, not a completed winner.
 
-Score each candidate against the rubric criterion by criterion, not on holistic feel. Compare against the cross-judge. Agreement on the base confirms the pick. Disagreement means one of you is biased or the rubric was ambiguous. Read both rationales before deciding.
-
-Pick the base on which candidate a future maintainer can extend most easily without breaking invariants. Prefer the cleaner boundary or smaller surface area when two feel tied.
-
-Record the pick and the reason in a short synthesis note alongside the base artifact, including the cross-judge's verdict.
+**Evidence outranks agreement.** A demonstrated defect outweighs reassuring votes. Compare your
+findings with the judge's and investigate disagreements. Fresh contexts and neutral labels do not
+eliminate shared blind spots or model-family biases.
 
 ## Phase E: Graft
 
-Walk each losing candidate once more and identify what is worth porting into the base. The signal is usually one or two things per candidate, not most of it.
+Inspect every alternative for useful differences. Port changes that improve the result against
+the criteria, reworking them to fit the base rather than pasting implementations together.
+Record important borrowed and rejected ideas with their source labels and reasons. If nothing
+improves the base, no graft is needed.
 
-Fold each graft in by hand, redesigning as if the grafted idea had been part of the base from day one. Don't paste mechanically. The result has to remain coherent under one mental model.
-
-Record what was grafted, from which candidate, and what was rejected and why. The rejection notes are the highest-signal part of the record. Future readers learn from what you considered and dropped, not just what you kept.
-
-When N candidates converge on the same shape, that is a strong agreement signal. Note the convergence in the record and ship the consensus shape. No graft is needed. When N candidates wildly diverge, Phase A was under-specified. Reframe and re-run rather than averaging the divergence.
+Convergence still requires verification. Divergence calls for comparing tradeoffs, not an automatic
+rerun. Reframe only when evidence shows the contract was misunderstood or a new experiment is
+needed.
 
 ## Phase F: Verify
 
-The synthesized artifact has to hold up under the same scrutiny as any other output. Verify it against the real thing (run it, test it, inspect the diff), not a proxy or a self-report. The arena does not earn you a pass.
-
-If verification surfaces a problem the arena did not catch, either Phase A was wrong (re-frame and re-run) or one candidate caught it and you missed the graft (go back to Phase E). Don't paper over.
+Exercise the final artifact, inspect the final diff, and run relevant checks after synthesis.
+Candidate and judge summaries are not verification. Fix ordinary bugs or bad grafts and rerun
+the checks; revisit framing only when evidence challenges the design or contract. Repeated failures
+on one assumption call for testing that assumption, not another full arena by default.
+Report required behavior that remains broken or unverified; do not claim success.
 
 ## Outputs
 
-One synthesized artifact. One short synthesis note alongside, naming the base, the grafts (with source candidate), the rejections, the dropouts if any, and the verification result.
+One artifact and a short synthesis note, in the reply or alongside it. Name the chosen base and why,
+important grafts and rejections, actual checks and unresolved gaps, and every runner's native CLI,
+model, and effort. Disclose substitutions, dropouts, absent judging, and family overlap with a
+candidate. Preserve results and logs before closing this run's Rex resources.
