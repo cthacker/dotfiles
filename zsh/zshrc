@@ -457,7 +457,10 @@ report_working_directory
 
 # === Reopen Agent Conversations After Rex Restarts === #
 # rex-restore is its own repository (~/checkouts/rex-restore). Without it, or outside a Rex
-# pane, this does nothing.
+# pane, this does nothing. Reopened agents start the way I always start them: with approvals
+# handled automatically (Claude Code's auto mode, Codex's --approve-for-me).
+typeset -ga REX_RESTORE_CLAUDE=(claude --permission-mode auto)
+typeset -ga REX_RESTORE_CODEX=(codex --no-daemon --approve-for-me)
 [[ -n ${REX_BLOCK:-} && -r ~/checkouts/rex-restore/rex-restore.zsh ]] &&
   source ~/checkouts/rex-restore/rex-restore.zsh
 
