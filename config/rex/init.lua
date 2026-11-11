@@ -1,4 +1,5 @@
 -- Rex config. Reload with `rex config reload`; list bindings with `rex keymap`.
+-- Caps Lock is remapped to Control in macOS, so every ctrl+... binding here is Caps Lock+...
 -- Docs: https://www.superlogical.com/rex/docs/customize/keyboard-shortcuts
 
 rex.bind("ctrl+cmd+k", "client.tab.previous")
@@ -47,3 +48,26 @@ rex.bind("ctrl+cmd+left", "pane.split.left")
 rex.bind("ctrl+cmd+right", "pane.split.right")
 rex.bind("ctrl+cmd+up", "pane.split.up")
 rex.bind("ctrl+cmd+down", "pane.split.down")
+
+-- Open a file from the screen: ctrl+cmd+o (Caps Lock+Cmd+O) lists the file paths shown in
+-- the focused pane; the one you pick opens beside it (see opener/pick.mjs). Works for
+-- scripts, which Rex won't Cmd-click open.
+rex.action{
+  name = "open_file_from_pane",
+  title = "Open File from Pane…",
+  run = function(ctx)
+    local _, err = rex.session.new_layer{
+      bounds = { 0.1, 0.15, 0.8, 0.7 },
+      focus = true,
+      layout = rex.layout.block{
+        flavor = terminal .. ".shell",
+        options = { command = {
+          os.getenv("HOME") .. "/checkouts/dotfiles/config/rex/opener/pick",
+          ctx.session_id, ctx.block_id,
+        } },
+      },
+    }
+    if err ~= nil then error(err, 0) end
+  end,
+}
+rex.bind("ctrl+cmd+o", "open_file_from_pane")

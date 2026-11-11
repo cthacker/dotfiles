@@ -439,6 +439,19 @@ if [ -z "$STARSHIP_SHELL" ]; then
   export PS1='$(show_virtual_env)%F{cyan}%~%f %F{green}❯%f '
 fi
 
+# === Report Working Directory to Terminal === #
+# OSC 7 tells the terminal where the shell is, so it can resolve relative
+# paths and links printed in the pane (Rex needs this to make them clickable).
+report_working_directory() {
+  emulate -L zsh
+  setopt extended_glob
+  local LC_ALL=C
+  printf '\e]7;file://%s%s\e\\' "$HOST" \
+    "${PWD//(#m)[^A-Za-z0-9\/_.~-]/%${(l:2::0:)$(([##16]#MATCH))}}"
+}
+chpwd_functions+=(report_working_directory)
+report_working_directory
+
 # === Initialize Starship Prompt === #
 if command -v starship &> /dev/null; then
   # Create a custom prompt command that prepends the virtualenv
