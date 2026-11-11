@@ -452,6 +452,12 @@ report_working_directory() {
 chpwd_functions+=(report_working_directory)
 report_working_directory
 
+# === Reopen Agent Conversations After Rex Restarts === #
+# rex-restore is its own repository (~/checkouts/rex-restore). Without it, or outside a Rex
+# pane, this does nothing.
+[[ -n ${REX_BLOCK:-} && -r ~/checkouts/rex-restore/rex-restore.zsh ]] &&
+  source ~/checkouts/rex-restore/rex-restore.zsh
+
 # === Initialize Starship Prompt === #
 if command -v starship &> /dev/null; then
   # Create a custom prompt command that prepends the virtualenv
