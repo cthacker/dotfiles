@@ -179,7 +179,8 @@ The configuration uses Atom One Dark theme across all tools for a consistent exp
 - **Neovim**: Edit `config/nvim/lua/plugins/onedark.lua`
 - **Tmux**: Modify color variables in `tmux.conf`
 - **Herdr**: Modify keybindings in `config/herdr/config.toml`
-- **Rex**: Modify keybindings in `config/rex/init.lua`, then run `rex config reload`. Caps Lock is remapped to Control in macOS, so its `ctrl+...` bindings are Caps Lock+...
+- **Rex**: Modify keybindings in `config/rex/init.lua`, then run `rex config reload`.
+  Caps Lock is remapped to Control in macOS, so its `ctrl+...` bindings are Caps Lock+...
 - **Starship**: Change themes with `./scripts/switch_starship_theme.sh`
 
 ## 🤝 Contributing

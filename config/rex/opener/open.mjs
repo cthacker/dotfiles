@@ -34,7 +34,8 @@ try {
     try {
       await refresh_preview(rex_call(), origin, JSON.parse(output), glow);
     } catch (error) {
-      process.stderr.write(`The Glow preview opened, but automatic refresh failed: ${error.message}. ` +
+      process.stderr.write(
+        `The Glow preview opened, but automatic refresh failed: ${error.message}. ` +
         "Press r in the preview to refresh manually.\n");
     }
     process.stdout.write(output);

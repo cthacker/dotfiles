@@ -43,7 +43,7 @@ before.
 - A request counts as coming from Rex when Rex sent it, or when the sender is not an app
   (such as `open` in a shell) and Rex is the frontmost app. Finder and other apps still
   open each type in its previous opener.
-- Opens a fresh pane per click; it does not reuse an existing preview or editor.
+- Each Markdown click opens a fresh Glow pane. Code files reuse one nvim pane per tab.
 - Does not navigate to Markdown fragment anchors.
 - Local macOS Rex only; not panes on remote hosts.
 
@@ -113,8 +113,8 @@ It misses paths that contain spaces and links whose text hides their target.
 | --- | --- |
 | `Handler.swift` | The macOS app: decides whether Rex asked, then previews or passes on. |
 | `open.mjs` | Validates the file, finds the pane, then launches Glow or nvim beside it. |
-| `bridge.mjs` | Handled types, pane search, launch arguments, the shared nvim pane and Glow's guarded refresh. |
-| `pick`, `pick.mjs` | The picker: finds the files named on a pane's screen and opens the chosen one. |
+| `bridge.mjs` | Handled types, pane search, launch arguments, the shared nvim pane, Glow refresh. |
+| `pick`, `pick.mjs` | The picker: lists the files named on a pane's screen and opens one. |
 | `install.mjs` | Builds and registers the app and writes its configuration; also removes it. |
 | `bridge.test.mjs` | Tests for the above with a simulated Rex. |
 

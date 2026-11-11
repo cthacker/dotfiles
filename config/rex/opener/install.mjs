@@ -129,6 +129,8 @@ ${Object.entries(fallbacks).map(([name, application]) =>
   process.stdout.write(`Installed ${bundle}\nOpens from Rex: ${registered.join(" ")}\n` +
     (failures ? `Could not register:\n${failures}\n` : "") +
     (dropped.length ? `No longer handled: ${dropped.join(" ")}\n` : "") +
-    (unrestored ? `Still opened by this app because macOS kept it as their default:\n${unrestored}\n` : "") +
+    (unrestored
+      ? `Still opened by this app because macOS kept it as their default:\n${unrestored}\n`
+      : "") +
     `Elsewhere each type opens with its previous application, listed in ${programs}\n`);
 }

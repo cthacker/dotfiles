@@ -110,13 +110,17 @@ const picked = spawnSync(fzf, [
   "--delimiter", "\t", "--with-nth", "3", "--reverse", "--no-sort", "--prompt", "open > ",
   "--header", "click or Enter · Esc cancels", "--bind", "left-click:accept",
   "--preview", preview, "--preview-window", "right,55%,+{2}/2",
-], { input: [...choices.values()].join("\n"), encoding: "utf8", stdio: ["pipe", "pipe", "inherit"] });
+], {
+  input: [...choices.values()].join("\n"), encoding: "utf8",
+  stdio: ["pipe", "pipe", "inherit"],
+});
 const [path, line] = picked.stdout.trim().split("\t");
 if (picked.status !== 0 || !path) process.exit(0);
 
 try {
   if (MARKDOWN.some((extension) => path.toLowerCase().endsWith(`.${extension}`))) {
-    execFileSync(process.execPath, [join(dirname(fileURLToPath(import.meta.url)), "open.mjs"), path], {
+    const opener = join(dirname(fileURLToPath(import.meta.url)), "open.mjs");
+    execFileSync(process.execPath, [opener, path], {
       env: { ...process.env, REX_SESSION: session, REX_BLOCK: block },
       stdio: ["ignore", "ignore", "pipe"], encoding: "utf8",
     });

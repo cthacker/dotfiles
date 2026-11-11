@@ -1,5 +1,5 @@
 #!/bin/bash
-set -uo pipefail
+set -euo pipefail
 
 # Type one line into a Codex pane and submit it, once Codex has finished its current turn.
 # Waits up to two minutes for Codex to be idle and sends nothing if it stays busy.
@@ -10,7 +10,7 @@ block=$2
 message=$3
 
 for _ in $(seq 1 60); do
-  text=$(rex capture -s "$session" -b "$block" --trim 2>/dev/null | tail -12)
+  text=$(rex capture -s "$session" -b "$block" --trim 2>/dev/null | tail -12) || true
   if grep -q "^›" <<<"$text" && ! grep -q "esc to interrupt" <<<"$text"; then
     rex send -s "$session" -b "$block" "$message"
     sleep 1

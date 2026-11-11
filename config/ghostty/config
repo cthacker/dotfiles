@@ -1,5 +1,6 @@
 # Ghostty terminal config, linked to ~/.config/ghostty/config by backup_link.sh.
 # Defaults are sensible; only overrides live here. See `ghostty +show-config --default --docs`.
+# Caps Lock is remapped to Control in macOS, so every ctrl+... binding here is Caps Lock+...
 
 keybind = shift+arrow_left=previous_tab
 keybind = shift+arrow_right=next_tab

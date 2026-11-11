@@ -1,4 +1,5 @@
 #!/bin/bash
 set -e
-node=$(/usr/bin/plutil -extract RexOpenerNode raw "$HOME/Applications/Rex Opener.app/Contents/Info.plist")
+plist="$HOME/Applications/Rex Opener.app/Contents/Info.plist"
+node=$(/usr/bin/plutil -extract RexOpenerNode raw "$plist")
 exec "$node" "$(dirname "$0")/pick.mjs" "$@"
