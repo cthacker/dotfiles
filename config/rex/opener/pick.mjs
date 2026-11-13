@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import { setTimeout as delay } from "node:timers/promises";
 import { MARKDOWN, open_in_editor, SUPPORT_DIRECTORY } from "./bridge.mjs";
 
-const [session, block, mode] = process.argv.slice(2);
+const [session, block] = process.argv.slice(2);
 const { rex, nvim } = JSON.parse(readFileSync(join(SUPPORT_DIRECTORY, "programs.json"), "utf8"));
 const server = process.env.REX_SERVER;
 const call = (args) => execFileSync(rex, [
@@ -38,8 +38,11 @@ const kind = (path) => {
 };
 const parse = (token) => {
   const [, name, line] = /^(.+?)(?::(\d+)(?::\d+)?)?$/.exec(token.replace(/[.,:;!?]+$/, "")) ?? [];
-  if (!name || !/[/.]/.test(name) || name.includes("://")) return undefined;
-  return { name: name.startsWith("~/") ? join(home, name.slice(2)) : name, line };
+  if (!name || name.includes("://")) return undefined;
+  // A bare word (Makefile, LICENSE) counts only as a file in the pane's own folder.
+  const bare = !/[/.]/.test(name);
+  if (bare && !/^[\w-]+$/.test(name)) return undefined;
+  return { name: name.startsWith("~/") ? join(home, name.slice(2)) : name, line, bare };
 };
 
 const mentions = [];
@@ -74,10 +77,10 @@ const children = below(cwd);
 const nearby = [...children, ...children.flatMap(below)];
 
 const choices = new Map();
-for (const { name, line } of mentions) {
+for (const { name, line, bare } of mentions) {
   const names = [...new Set([name, name.replace(/^[ab]\//, "")])];
   const bases = isAbsolute(name) ? [""]
-    : [cwd, ...shown, ...(name.includes("/") ? nearby : [])];
+    : bare ? [cwd] : [cwd, ...shown, ...(name.includes("/") ? nearby : [])];
   const paths = new Set();
   for (const base of bases) {
     for (const candidate of names) {
@@ -92,10 +95,6 @@ for (const { name, line } of mentions) {
       (line ? `:${line}` : "");
     if (!choices.has(label)) choices.set(label, `${path}\t${line ?? 0}\t${label}`);
   }
-}
-if (mode === "--list") {
-  process.stdout.write([...choices.keys()].join("\n") + "\n");
-  process.exit(0);
 }
 if (!choices.size) await fail("No file paths on this pane's screen.");
 

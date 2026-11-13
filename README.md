@@ -172,6 +172,34 @@ installer.
 New skills should set `disable-model-invocation: true` in their frontmatter so
 they only fire when invoked explicitly as `/<name>`.
 
+## 🦖 Rex
+
+[Rex](https://www.superlogical.com/rex) is the terminal I use for agents. Three pieces make it
+work the way I want; the normal install links the first and does not set up the other two.
+
+- **Keybindings** in `config/rex/init.lua`, linked to `~/.config/rex/init.lua`.
+- **Rex Opener** (`config/rex/opener/`): Cmd-click a file in a pane to open it in a pane
+  beside it, Markdown in Glow and code in nvim, and **Ctrl-Cmd-O** (Caps Lock-Cmd-O) to pick
+  any file named on the screen. It installs a small macOS app as the default opener for
+  those file types. See [its README](config/rex/opener/README.md).
+- **rex-restore**, my own separate, private repository: after Rex restarts, each pane
+  reopens the Claude Code, Codex or Pi conversation it had, idle, with approvals handled
+  automatically. `zsh/zshrc` loads it from `~/checkouts/rex-restore` when it is there.
+
+The paths are fixed: this repository must be at `~/checkouts/dotfiles` (the picker key in
+`init.lua` points there) and rex-restore at `~/checkouts/rex-restore`. On a new Mac, after
+the normal install, with Glow, nvim, fzf, Node 22.18+ and the Xcode command-line tools:
+
+```bash
+node ~/checkouts/dotfiles/config/rex/opener/install.mjs      # answer macOS's prompts
+git clone git@github.com:cthacker/rex-restore.git ~/checkouts/rex-restore
+~/checkouts/rex-restore/install.sh
+```
+
+rex-restore's installer adds hooks to Claude Code and Codex and links a Pi extension. Then
+start `codex`, type `/hooks` and approve the four rex-restore entries, and open new panes.
+`./scripts/uninstall.sh` does not remove either; each README says how.
+
 ## 🎨 Themes and Customization
 
 The configuration uses Atom One Dark theme across all tools for a consistent experience. To modify the theme:

@@ -1,12 +1,15 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import {
+  chmodSync, existsSync, mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import test from "node:test";
 import {
-  editor_arguments, editor_expression, find_origin, glow_arguments, read_target, refresh_preview,
+  editor_arguments, editor_expression, find_origin, glow_arguments, open_in_editor, read_target,
+  refresh_preview,
 } from "./bridge.mjs";
 
 const context = {
@@ -229,4 +232,99 @@ test("opener rejects anything it does not handle before invoking Rex", () => {
     ], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }),
     (error) => error.status === 1 && /Not a file Rex Opener opens|ENOENT/.test(error.stderr));
   }
+});
+
+// An nvim stand-in: FAKE_NVIM says whether an editor is listening ("none"), answers with its
+// pane ("block:..."), or fails ("fail").
+function editor_fixture(t) {
+  const directory = mkdtempSync(join(tmpdir(), "rex-opener-"));
+  const nvim = join(directory, "nvim");
+  writeFileSync(nvim, `#!/bin/bash
+case "$FAKE_NVIM" in
+  none) echo "E247: Failed to connect: connection refused." >&2; exit 2 ;;
+  fail) echo "E37: No write since last change" >&2; exit 1 ;;
+  *) echo "$FAKE_NVIM" ;;
+esac
+`);
+  chmodSync(nvim, 0o755);
+  const window_id = "window:0123456789ab";
+  const sockets = join(directory, "sockets");
+  mkdirSync(sockets);
+  const listen = join(sockets, "0123456789ab.sock");
+  const calls = [];
+  const view = { windows: [{ window_id, layers: [{ blocks: [{ block_id: context.block }] }] }] };
+  const call = (args) => {
+    calls.push(args);
+    return args.includes("session.view") ? JSON.stringify(view) : "{}";
+  };
+  const launches = [];
+  const launch = (args) => {
+    launches.push(args);
+    writeFileSync(listen, "");
+  };
+  t.after(() => {
+    delete process.env.FAKE_NVIM;
+    rmSync(directory, { recursive: true, force: true });
+  });
+  return { tools: { call, launch, nvim, sockets }, calls, launches, listen };
+}
+const origin = { ...context, path: "/work/app.py" };
+
+test("starts an editor for the tab when none is listening, and waits until it listens", (t) => {
+  const { tools, calls, launches, listen } = editor_fixture(t);
+  process.env.FAKE_NVIM = "none";
+  open_in_editor(tools, origin, "/work", 3, () => {});
+  assert.equal(launches.length, 1);
+  assert.equal(launches[0][launches[0].indexOf("--listen") + 1], listen);
+  assert.ok(!calls.some((args) => args.includes("session.focus_block")));
+  assert.ok(!existsSync(`${listen}.lock`));
+});
+
+test("sends the file to the tab's running editor and focuses its pane", (t) => {
+  const { tools, calls, launches } = editor_fixture(t);
+  process.env.FAKE_NVIM = "block:9999-abcd";
+  open_in_editor(tools, origin, "/work", undefined, () => {});
+  assert.equal(launches.length, 0);
+  assert.deepEqual(JSON.parse(calls.at(-1).at(-1)), { block_id: "block:9999-abcd" });
+});
+
+test("an editor that fails keeps its socket and no second editor starts", (t) => {
+  const { tools, launches, listen } = editor_fixture(t);
+  writeFileSync(listen, "");
+  process.env.FAKE_NVIM = "fail";
+  assert.throws(() => open_in_editor(tools, origin, "/work", undefined, () => {}), /E37/);
+  assert.equal(launches.length, 0);
+  assert.ok(existsSync(listen));
+  assert.ok(!existsSync(`${listen}.lock`));
+});
+
+test("a second open waits for the first to finish with the tab", (t) => {
+  const { tools, launches, listen } = editor_fixture(t);
+  mkdirSync(`${listen}.lock`, { recursive: true });
+  process.env.FAKE_NVIM = "block:9999-abcd";
+  let waits = 0;
+  open_in_editor(tools, origin, "/work", undefined, () => {
+    if (++waits === 3) rmSync(`${listen}.lock`, { recursive: true });
+  });
+  assert.equal(waits, 3);
+  assert.equal(launches.length, 0);
+});
+
+test("an editor that never starts listening is an error, and the lock is released", (t) => {
+  const { tools, listen } = editor_fixture(t);
+  process.env.FAKE_NVIM = "none";
+  const silent = { ...tools, launch: () => {} };
+  assert.throws(() => open_in_editor(silent, origin, "/work", undefined, () => {}),
+    /did not start listening/);
+  assert.ok(!existsSync(`${listen}.lock`));
+});
+
+test("a lock nobody releases is reported, not taken over", (t) => {
+  const { tools, launches, listen } = editor_fixture(t);
+  mkdirSync(`${listen}.lock`);
+  process.env.FAKE_NVIM = "none";
+  assert.throws(() => open_in_editor(tools, origin, "/work", undefined, () => {}),
+    /still being opened/);
+  assert.equal(launches.length, 0);
+  assert.ok(existsSync(`${listen}.lock`));
 });

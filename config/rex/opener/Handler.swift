@@ -1,4 +1,5 @@
 import AppKit
+import UniformTypeIdentifiers
 
 final class OpenHandler: NSObject, NSApplicationDelegate {
   private var pending = 0
@@ -34,11 +35,13 @@ final class OpenHandler: NSObject, NSApplicationDelegate {
     return value["sessionID"] as? String
   }
 
+  // Opens the file with the application its type used before Rex Opener took it over.
   private func forward(_ url: URL) {
     let editors = Bundle.main.object(forInfoDictionaryKey: "RexOpenerFallbacks")
       as? [String: String] ?? [:]
-    let editor = URL(fileURLWithPath: editors[url.pathExtension.lowercased()]
-      ?? editors["txt"] ?? "/System/Applications/TextEdit.app")
+    let type = UTType(filenameExtension: url.pathExtension)?.identifier ?? ""
+    let editor = URL(fileURLWithPath: editors[type]
+      ?? editors[UTType.plainText.identifier] ?? "/System/Applications/TextEdit.app")
     pending += 1
     NSWorkspace.shared.open(
       [url], withApplicationAt: editor, configuration: NSWorkspace.OpenConfiguration()

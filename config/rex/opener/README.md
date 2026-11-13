@@ -31,6 +31,10 @@ before.
 - The file types are the `MARKDOWN` and `CODE` lists in `bridge.mjs`. To change them, edit
   the lists and run the installer again; a type you remove returns to its previous opener.
   HTML is deliberately left to the browser.
+- macOS sets default apps per type, not per extension, and some extensions share a type:
+  `.cpp` brings `.cc` and `.cxx` with it, for example. Those open through this app too, and
+  outside Rex in the app their type used before. An extension cannot be given back on its
+  own while another listed extension shares its type.
 - Script types (`py`, `sh`, `zsh`, `rb`, `js`, `mjs`, `tsx`) cannot be Cmd-clicked. Rex
   refuses to open a file that macOS classes as a script or executable ("Opening this local
   target could execute code"), so the click never reaches this app. Use the picker for
@@ -43,7 +47,9 @@ before.
 - A request counts as coming from Rex when Rex sent it, or when the sender is not an app
   (such as `open` in a shell) and Rex is the frontmost app. Finder and other apps still
   open each type in its previous opener.
-- Each Markdown click opens a fresh Glow pane. Code files reuse one nvim pane per tab.
+- Each Markdown click opens a fresh Glow pane. Code files reuse one nvim pane per tab. If
+  that nvim is busy or refuses the file (for example while it is waiting for an answer), the
+  file is not opened in Rex; the log says why and the file opens in its previous app.
 - Does not navigate to Markdown fragment anchors.
 - Local macOS Rex only; not panes on remote hosts.
 
@@ -64,7 +70,9 @@ The installer creates:
   previous opener (`programs.json`), a dedicated Glow configuration and the handler log.
 
 It records the current Node, Rex, Glow and nvim paths and this directory's location. Run
-it again if an upgrade removes one of those executables or if this directory moves.
+it again if an upgrade removes one of those executables or if this directory moves. It
+builds the new app beside the old one and swaps it in only once it is built and signed, so a
+failed build leaves the working app as it was.
 
 Because the app is now the default opener, Finder shows its generic icon for these files
 and Quick Look offers "Open with Rex Opener". `.ts` shares its macOS type with MPEG
@@ -104,8 +112,13 @@ levels below the working directory. If it exists in several, up to three are lis
 path the program broke across two lines is rejoined when the first line reaches the
 pane's edge.
 
+A name with no slash and no dot, such as `Makefile` or `LICENSE`, is only looked for in the
+pane's working directory.
+
 It only sees what is on screen now, not what has scrolled away in a full-screen program.
-It misses paths that contain spaces and links whose text hides their target.
+It misses paths that contain spaces and links whose text hides their target. It does not
+go through macOS, so if Glow or nvim fails it shows the error instead of falling back to
+another app.
 
 ## Files
 
@@ -152,4 +165,6 @@ node config/rex/opener/install.mjs remove
 ```
 
 This makes each type's previous opener its default again, unregisters and deletes the
-app, and deletes its support directory.
+app, and deletes its support directory. If macOS does not let a type go back (you kept the
+current app at the prompt, or the previous app is gone), nothing is removed and it says
+which types; run it again to retry.

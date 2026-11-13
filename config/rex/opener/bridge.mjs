@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdirSync, realpathSync, rmSync, statSync } from "node:fs";
+import { existsSync, mkdirSync, realpathSync, rmSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { basename, dirname, extname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -107,23 +107,72 @@ export function editor_expression(path, line) {
   return `[execute('edit ${line ? `+${line} ` : ""}' .. ${file}), getenv('REX_BLOCK')][1]`;
 }
 
-export function open_in_editor({ call, launch, nvim }, origin, cwd, line) {
+const pause = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+
+// Sends the file to the tab's nvim and returns that nvim's pane, or undefined when no nvim is
+// listening there. A listening nvim that fails or is too slow is an error, not a missing editor:
+// starting another one would leave the first unreachable.
+export function send_to_editor(nvim, listen, path, line) {
+  try {
+    return execFileSync(nvim, ["--server", listen, "--remote-expr", editor_expression(path, line)],
+      { timeout: 5000, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
+  } catch (error) {
+    if (/\bE247:/.test(error.stderr ?? "")) return undefined;
+    const reason = error.stderr?.trim() || error.message;
+    throw new Error(`The tab's nvim did not open the file: ${reason}`);
+  }
+}
+
+// One open at a time per tab, so two quick opens cannot each start an editor. A lock left by
+// an opener that died is not taken over automatically, since two openers could then both take
+// it; the error names it so it can be removed by hand (it is in /tmp, so a restart clears it).
+function with_lock(lock, work, wait) {
+  for (let waited = 0; ; waited += 100) {
+    try {
+      mkdirSync(lock);
+      break;
+    } catch (error) {
+      if (error.code !== "EEXIST") throw error;
+      if (waited >= 20000) {
+        throw new Error(
+          `Another file is still being opened in this tab; if none is, remove ${lock}`);
+      }
+      wait(100);
+    }
+  }
+  try {
+    return work();
+  } finally {
+    rmSync(lock, { recursive: true, force: true });
+  }
+}
+
+const SOCKETS = join("/tmp", `rex-opener-${process.getuid()}`);
+
+export function open_in_editor({ call, launch, nvim, sockets = SOCKETS }, origin, cwd, line,
+  wait = pause) {
   const view = JSON.parse(call(["api", "call", "--session", origin.session, "session.view", "{}"]));
   const window = view.windows.find((item) => item.layers.some(
     (layer) => (layer.blocks ?? []).some((block) => block.block_id === origin.block)));
   if (!window) throw new Error("The pane is no longer open");
-  const listen = join("/tmp", `rex-opener-${process.getuid()}`,
-    `${window.window_id.slice(-12)}.sock`);
+  const listen = join(sockets, `${window.window_id.slice(-12)}.sock`);
+  mkdirSync(dirname(listen), { recursive: true, mode: 0o700 });
+  const block = with_lock(`${listen}.lock`, () => {
+    const running = send_to_editor(nvim, listen, origin.path, line);
+    if (running) return running;
+    rmSync(listen, { force: true });
+    launch(editor_arguments(origin, nvim, cwd, { line, listen }));
+    // Hold the lock until the new nvim listens, so the next open reaches it. An nvim that takes
+    // longer than this to start (a very slow shell) could still see a second one started.
+    for (let waited = 0; waited < 15000 && !existsSync(listen); waited += 100) wait(100);
+    if (!existsSync(listen)) throw new Error("nvim did not start listening within 15 seconds");
+    return undefined;
+  }, wait);
+  if (!block) return;
   try {
-    const block = execFileSync(nvim, [
-      "--server", listen, "--remote-expr", editor_expression(origin.path, line),
-    ], { timeout: 2000, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
     call(["api", "call", "--session", origin.session, "session.focus_block",
       JSON.stringify({ block_id: block })]);
-    return;
-  } catch {
-    rmSync(listen, { force: true });
+  } catch (error) {
+    process.stderr.write(`Opened in nvim, but could not focus its pane: ${error.message}\n`);
   }
-  mkdirSync(dirname(listen), { recursive: true, mode: 0o700 });
-  launch(editor_arguments(origin, nvim, cwd, { line, listen }));
 }
