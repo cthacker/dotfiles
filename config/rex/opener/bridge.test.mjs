@@ -1,15 +1,15 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import {
-  chmodSync, existsSync, mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync,
+  chmodSync, existsSync, mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync, writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import test from "node:test";
 import {
-  editor_arguments, editor_expression, find_origin, glow_arguments, open_in_editor, read_target,
-  refresh_preview,
+  editor_arguments, editor_expression, find_origin, glow_arguments, open_in_editor,
+  private_folder, read_target, refresh_preview,
 } from "./bridge.mjs";
 
 const context = {
@@ -249,7 +249,6 @@ esac
   chmodSync(nvim, 0o755);
   const window_id = "window:0123456789ab";
   const sockets = join(directory, "sockets");
-  mkdirSync(sockets);
   const listen = join(sockets, "0123456789ab.sock");
   const calls = [];
   const view = { windows: [{ window_id, layers: [{ blocks: [{ block_id: context.block }] }] }] };
@@ -290,6 +289,7 @@ test("sends the file to the tab's running editor and focuses its pane", (t) => {
 
 test("an editor that fails keeps its socket and no second editor starts", (t) => {
   const { tools, launches, listen } = editor_fixture(t);
+  private_folder(tools.sockets);
   writeFileSync(listen, "");
   process.env.FAKE_NVIM = "fail";
   assert.throws(() => open_in_editor(tools, origin, "/work", undefined, () => {}), /E37/);
@@ -300,7 +300,8 @@ test("an editor that fails keeps its socket and no second editor starts", (t) =>
 
 test("a second open waits for the first to finish with the tab", (t) => {
   const { tools, launches, listen } = editor_fixture(t);
-  mkdirSync(`${listen}.lock`, { recursive: true });
+  private_folder(tools.sockets);
+  mkdirSync(`${listen}.lock`);
   process.env.FAKE_NVIM = "block:9999-abcd";
   let waits = 0;
   open_in_editor(tools, origin, "/work", undefined, () => {
@@ -321,10 +322,26 @@ test("an editor that never starts listening is an error, and the lock is release
 
 test("a lock nobody releases is reported, not taken over", (t) => {
   const { tools, launches, listen } = editor_fixture(t);
+  private_folder(tools.sockets);
   mkdirSync(`${listen}.lock`);
   process.env.FAKE_NVIM = "none";
   assert.throws(() => open_in_editor(tools, origin, "/work", undefined, () => {}),
     /still being opened/);
   assert.equal(launches.length, 0);
   assert.ok(existsSync(`${listen}.lock`));
+});
+
+test("the socket folder is used only when it is this user's private folder", (t) => {
+  const { directory } = test_fixture(t);
+  const open = join(directory, "open");
+  mkdirSync(open, { mode: 0o755 });
+  chmodSync(open, 0o755);
+  assert.throws(() => private_folder(open), /not a private folder/);
+  const target = join(directory, "elsewhere");
+  mkdirSync(target, { mode: 0o700 });
+  symlinkSync(target, join(directory, "link"));
+  assert.throws(() => private_folder(join(directory, "link")), /not a private folder/);
+  const fresh = join(directory, "fresh");
+  private_folder(fresh);
+  private_folder(fresh);
 });

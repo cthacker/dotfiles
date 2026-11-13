@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, realpathSync, rmSync, statSync } from "node:fs";
+import { existsSync, lstatSync, mkdirSync, realpathSync, rmSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { basename, dirname, extname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -149,6 +149,21 @@ function with_lock(lock, work, wait) {
 
 const SOCKETS = join("/tmp", `rex-opener-${process.getuid()}`);
 
+// The socket folder lives in the shared /tmp, so that a restart clears it. Another account
+// could create a folder of that name first, so use it only when it is a real folder that this
+// user owns and nobody else can enter.
+export function private_folder(folder) {
+  try {
+    mkdirSync(folder, { mode: 0o700 });
+  } catch (error) {
+    if (error.code !== "EEXIST") throw error;
+  }
+  const found = lstatSync(folder);
+  if (!found.isDirectory() || found.uid !== process.getuid() || (found.mode & 0o077) !== 0) {
+    throw new Error(`${folder} is not a private folder of this user; remove it to continue`);
+  }
+}
+
 export function open_in_editor({ call, launch, nvim, sockets = SOCKETS }, origin, cwd, line,
   wait = pause) {
   const view = JSON.parse(call(["api", "call", "--session", origin.session, "session.view", "{}"]));
@@ -156,7 +171,7 @@ export function open_in_editor({ call, launch, nvim, sockets = SOCKETS }, origin
     (layer) => (layer.blocks ?? []).some((block) => block.block_id === origin.block)));
   if (!window) throw new Error("The pane is no longer open");
   const listen = join(sockets, `${window.window_id.slice(-12)}.sock`);
-  mkdirSync(dirname(listen), { recursive: true, mode: 0o700 });
+  private_folder(sockets);
   const block = with_lock(`${listen}.lock`, () => {
     const running = send_to_editor(nvim, listen, origin.path, line);
     if (running) return running;
